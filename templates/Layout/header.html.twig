@@ -1,0 +1,49 @@
+<header class="sticky-top">
+	<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">E-commerce Symfo</a>
+			<button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation"></button>
+			<div class="collapse navbar-collapse" id="collapsibleNavId">
+				<ul class="navbar-nav me-auto mt-2 mt-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="#">Home
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Produits</a>
+					</li>
+				</ul>
+				<ul class="navbar-nav ms-auto">
+					{% if app.user is defined and app.user is not null %}
+						{% if is_granted('ROLE_ADMIN') %}
+							<li class="navbar-item me-2">
+								<div class="dropdown">
+									<button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										Admin
+									</button>
+									<div class="dropdown-menu" aria-labelledby="triggerId">
+										<a class="dropdown-item" href="#">Users</a>
+										<div class="dropdown-divider"></div>
+										<a class="dropdown-item" href="#">Produits</a>
+										<div class="dropdown-divider"></div>
+										<a class="dropdown-item" href="#">Catégories</a>
+									</div>
+								</div>
+							</li>
+						{% endif %}
+						<li class="navbar-item">
+							<a href="/logout" class="btn btn-danger text-light">Déconnexion</a>
+						</li>
+					{% else %}
+						<li class="navbar-item me-2">
+							<a href="#" class="btn btn-secondary">Inscription</a>
+						</li>
+						<li class="navbar-item">
+							<a href="#" class="btn btn-outline-light">Connexion</a>
+						</li>
+					{% endif %}
+				</ul>
+			</div>
+		</div>
+	</nav>
+</header>

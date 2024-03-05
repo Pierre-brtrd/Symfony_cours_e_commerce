@@ -1,0 +1,32 @@
+$primary: #1b2731;
+$secondary: #f8c557;
+$tertiary: #252c33;
+
+$text-color: #777777;
+$grey: #888;
+$grey-light: #bdbdbd;
+$grey-aside: #ececec;
+$white: #f5f5f5;
+$dark-blue: #0b2864;
+$grey-banner: #fcfcfd;
+$heading: #48455a;
+
+/** Fonts **/
+
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap");
+
+$font-primary: "Lato", sans-serif;
+
+// Border radius
+$border-radius: 8px;
+
+// Box shadow
+$box-shadow-card:
+    0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+
+$box-shadow-card-image:
+    0 16px 38px -12px rgba(0, 0, 0, 0.56),
+    0 4px 25px 0px rgba(0, 0, 0, 0.12),
+    0 8px 10px -5px rgba(0, 0, 0, 0.2);
