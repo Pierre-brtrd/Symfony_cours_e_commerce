@@ -1,7 +1,7 @@
 vich_uploader:
     db_driver: orm
 
-    metada:
+    metadata:
         type: attribute
     #mappings:
     #    products:

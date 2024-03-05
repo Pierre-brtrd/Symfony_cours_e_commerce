@@ -1,4 +1,6 @@
 {
+    "name": "pierre-brtrd/Symfony_cours_e_commerce",
+    "description": "Cours sur symfony pour e-commerce",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
@@ -43,6 +45,7 @@
         "symfony/ux-turbo": "^2.16",
         "symfony/validator": "7.0.*",
         "symfony/web-link": "7.0.*",
+        "symfony/webpack-encore-bundle": "^2.1",
         "symfony/yaml": "7.0.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
