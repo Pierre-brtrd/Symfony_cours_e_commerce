@@ -50,10 +50,15 @@ class Product
     private ?Taxe $taxe = null;
 
     #[Vich\UploadableField(mapping: 'products', fileNameProperty: 'imageName')]
-    #[Assert\NotBlank]
     #[Assert\Image(
         mimeTypes: ['image/*'],
         maxSize: '8M',
+    )]
+    #[Assert\When(
+        expression: 'this.getId() == null or this.getId() == true and this.getImageName() == null',
+        constraints: [
+            new Assert\NotBlank(),
+        ]
     )]
     private ?File $image = null;
 

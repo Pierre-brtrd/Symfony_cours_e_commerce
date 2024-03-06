@@ -1,0 +1,14 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Nouveau produit
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center mb-2">Création d'un produit</h1>
+		{% include 'Backend/Products/_form.html.twig' with { buttonLabel: 'Créer' } %}
+		<a href="{{ path('admin.products.index') }}" class="btn btn-primary mt-3">Retour à la liste</a>
+	</section>
+{% endblock %}

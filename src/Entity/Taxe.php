@@ -31,7 +31,6 @@ class Taxe
     private ?float $rate = null;
 
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'taxe')]
-    #[Assert\Valid]
     private Collection $products;
 
     public function __construct()

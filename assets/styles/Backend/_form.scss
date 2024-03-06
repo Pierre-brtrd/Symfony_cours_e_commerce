@@ -1,11 +1,10 @@
-table {
-    td {
+form {
+    .vich-image {
         img {
-            display: block;
-            margin: auto;
-            max-width: 7em;
-            object-fit: contain;
+            margin-top: 1em;
+            border-radius: $border-radius;
             box-shadow: $box-shadow-card;
+            width: 50%;
         }
     }
 }
