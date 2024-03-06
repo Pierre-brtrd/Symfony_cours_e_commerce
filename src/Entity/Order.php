@@ -35,11 +35,27 @@ class Order
     #[Assert\Choice(
         choices: [self::STATUS_CART, self::STATUS_NEW, self::STATUS_PAID, self::STATUS_SHIPPED, self::STATUS_CANCELLED]
     )]
-    private ?string $status = null;
+    private string $status = self::STATUS_CART;
 
     public function __construct()
     {
         $this->items = new ArrayCollection();
+    }
+
+    /**
+     * Calculates the order total.
+     *
+     * @return float
+     */
+    public function getTotal(): float
+    {
+        $total = 0;
+
+        foreach ($this->getItems() as $item) {
+            $total += $item->getTotal();
+        }
+
+        return $total;
     }
 
     public function getId(): ?int
@@ -57,10 +73,19 @@ class Order
 
     public function addItem(OrderItem $item): static
     {
-        if (!$this->items->contains($item)) {
-            $this->items->add($item);
-            $item->setOrderRef($this);
+        foreach ($this->getItems() as $existingItem) {
+            // The item already exists, update the quantity
+            if ($existingItem->equals($item)) {
+                $existingItem->setQuantity(
+                    $existingItem->getQuantity() + $item->getQuantity()
+                );
+
+                return $this;
+            }
         }
+
+        $this->items[] = $item;
+        $item->setOrderRef($this);
 
         return $this;
     }
@@ -72,6 +97,15 @@ class Order
             if ($item->getOrderRef() === $this) {
                 $item->setOrderRef(null);
             }
+        }
+
+        return $this;
+    }
+
+    public function removeItems(): self
+    {
+        foreach ($this->getItems() as $item) {
+            $this->removeItem($item);
         }
 
         return $this;
