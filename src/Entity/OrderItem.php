@@ -20,7 +20,7 @@ class OrderItem
 
     #[ORM\Column]
     #[Assert\NotBlank]
-    #[Assert\PositiveOrZero()]
+    #[Assert\GreaterThanOrEqual(1)]
     private ?int $quantity = null;
 
     #[ORM\ManyToOne(inversedBy: 'items')]

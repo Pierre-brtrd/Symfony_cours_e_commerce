@@ -2,10 +2,14 @@
 
 namespace App\Controller\Frontend;
 
+use App\Entity\OrderItem;
 use App\Entity\Product;
+use App\Form\AddToCartType;
+use App\Manager\CartManager;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Role\Role;
@@ -26,8 +30,8 @@ class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/{code}', '.show', methods: ['GET'])]
-    public function show(?Product $product): Response|RedirectResponse
+    #[Route('/{code}', '.show', methods: ['GET', 'POST'])]
+    public function show(?Product $product, Request $request, CartManager $cartManager): Response|RedirectResponse
     {
         if (!$product) {
             $this->addFlash('error', 'Produit non trouvé');
@@ -35,8 +39,27 @@ class ProductController extends AbstractController
             return $this->redirectToRoute('app.products.index');
         }
 
+        $orderItem = new OrderItem;
+
+        $form = $this->createForm(AddToCartType::class, $orderItem);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $orderItem->setProduct($product);
+
+            $cart = $cartManager->getCurrentCart();
+            $cart->addItem($orderItem);
+
+            $cartManager->save($cart);
+
+            $this->addFlash('success', 'Produit ajouté au panier');
+
+            return $this->redirectToRoute('app.products.show', ['code' => $product->getCode()]);
+        }
+
         return $this->render('Frontend/Products/show.html.twig', [
             'product' => $product,
+            'form' => $form,
         ]);
     }
 }
