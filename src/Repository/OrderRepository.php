@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Order;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -31,6 +32,17 @@ class OrderRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findLastCartUser(User $user): ?Order
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.user = :user')
+            ->andWhere('c.status = :status')
+            ->setParameter('user', $user)
+            ->setParameter('status', Order::STATUS_CART)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     //    /**

@@ -21,6 +21,7 @@ class CartController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $cart->setUpdatedAt(new \DateTimeImmutable());
             $cartManager->save($cart);
 
             $this->addFlash('success', 'Panier mis à jour avec succès !');

@@ -5,6 +5,7 @@ namespace App\Factory;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Entity\Product;
+use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 /**
@@ -13,6 +14,11 @@ use Webmozart\Assert\Assert;
  */
 class OrderFactory
 {
+    public function __construct(
+        private Security $security
+    ) {
+    }
+
     /**
      * Creates an order
      *
@@ -20,7 +26,13 @@ class OrderFactory
      */
     public function create(): Order
     {
-        return (new Order())
+        $order = new Order();
+
+        if ($this->security->getUser()) {
+            $order->setUser($this->security->getUser());
+        }
+
+        return $order
             ->setStatus(Order::STATUS_CART);
     }
 

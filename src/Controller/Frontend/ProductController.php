@@ -49,6 +49,7 @@ class ProductController extends AbstractController
 
             $cart = $cartManager->getCurrentCart();
             $cart->addItem($orderItem);
+            $cart->setUpdatedAt(new \DateTimeImmutable());
 
             $cartManager->save($cart);
 
