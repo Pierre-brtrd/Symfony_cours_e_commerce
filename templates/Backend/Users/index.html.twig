@@ -29,8 +29,8 @@
 							<td>{{ user.updatedAt|format_datetime('short', 'short') }}</td>
 							<td>
 								<div class="d-flex gap-2 align-items-center">
-									<a href="#" class="btn btn-warning">Modifier</a>
-									{{ common.deleteForm('#', user.id)}}
+									<a href="{{ path('admin.users.edit', {id: user.id}) }}" class="btn btn-warning">Modifier</a>
+									{{ common.deleteForm(path('admin.users.delete', {id: user.id}), user.id)}}
 								</div>
 							</td>
 						</tr>
