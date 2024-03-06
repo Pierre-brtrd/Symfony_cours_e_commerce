@@ -6,12 +6,15 @@
 {% endblock %}
 
 {% block body %}
-	<section class="container mt-2">
+	<section class="container mt-2 mb-4 product">
 		<h1 class="text-center">Découvrez nos produits</h1>
-		<div class="row gy-2 mt-3">
+		<div class="row gy-3 mt-3">
 			{% for product in products %}
 				{% include 'Frontend/Products/_card.html.twig' %}
 			{% endfor %}
+		</div>
+		<div class="mt-4">
+			{{ knp_pagination_render(products) }}
 		</div>
 	</section>
 {% endblock %}

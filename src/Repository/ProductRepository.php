@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -16,12 +18,14 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private PaginatorInterface $paginator
+    ) {
         parent::__construct($registry, Product::class);
     }
 
-    public function createListShop(bool $includeDisable = false, ?int $max = null): array
+    public function createListShop(bool $includeDisable = false, int $page = 1, int $maxPerPage = 6): PaginationInterface
     {
         $query = $this->createQueryBuilder('p')
             ->select('p, c, t')
@@ -32,14 +36,15 @@ class ProductRepository extends ServiceEntityRepository
             $query->andWhere('p.enable = true');
         }
 
-        if ($max) {
-            $query->setMaxResults($max);
-        }
-
-        return $query
+        $query
             ->orderBy('p.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->getQuery();
+
+        return $this->paginator->paginate(
+            $query,
+            $page,
+            $maxPerPage
+        );
     }
 
     public function findLatest(int $limit, bool $includeDisable = false): array

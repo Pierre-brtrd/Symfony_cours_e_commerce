@@ -50,6 +50,9 @@
     "knplabs/knp-gaufrette-bundle": {
         "version": "v0.9.0"
     },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v6.3.0"
+    },
     "phpunit/phpunit": {
         "version": "9.6",
         "recipe": {
