@@ -1,0 +1,13 @@
+.product-show {
+    .product-main-img {
+        border-radius: $border-radius;
+        box-shadow: $box-shadow-card;
+    }
+
+    &-price {
+        margin-top: 1em;
+        font-size: $h3-font-size;
+        font-weight: $font-weight-bold;
+        color: $secondary;
+    }
+}

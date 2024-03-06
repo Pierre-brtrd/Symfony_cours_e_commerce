@@ -68,6 +68,9 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $imageName = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $shortDescription = null;
+
 
     public function getId(): ?int
     {
@@ -120,6 +123,11 @@ class Product
         $this->priceHT = $priceHT;
 
         return $this;
+    }
+
+    public function getPriceTTC(): float
+    {
+        return $this->priceHT * (1 + $this->taxe->getRate() / 100);
     }
 
     public function getTaxe(): ?Taxe
@@ -177,5 +185,17 @@ class Product
     public function getImage(): ?File
     {
         return $this->image;
+    }
+
+    public function getShortDescription(): ?string
+    {
+        return $this->shortDescription;
+    }
+
+    public function setShortDescription(string $shortDescription): static
+    {
+        $this->shortDescription = $shortDescription;
+
+        return $this;
     }
 }

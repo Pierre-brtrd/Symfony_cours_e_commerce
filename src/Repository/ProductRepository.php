@@ -21,6 +21,24 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    public function createListShop(bool $includeDisable = false, ?int $max = null): array
+    {
+        $query = $this->createQueryBuilder('p');
+
+        if (!$includeDisable) {
+            $query->andWhere('p.enable = true');
+        }
+
+        if ($max) {
+            $query->setMaxResults($max);
+        }
+
+        return $query
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Product[] Returns an array of Product objects
     //     */

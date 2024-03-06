@@ -27,10 +27,17 @@ class ProductType extends AbstractType
                     'placeholder' => 'Titre du produit'
                 ]
             ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Description',
+            ->add('shortDescription', TextareaType::class, [
+                'label' => 'Description courte',
                 'attr' => [
-                    'placeholder' => 'Description du produit',
+                    'placeholder' => 'Description courte du produit',
+                    'rows' => 2,
+                ]
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => 'Description longue',
+                'attr' => [
+                    'placeholder' => 'Description longue du produit',
                     'rows' => 5,
                 ]
             ])
