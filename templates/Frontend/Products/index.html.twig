@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Nos produits
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Découvrez nos produits</h1>
+		<div class="row gy-2 mt-3">
+			{% for product in products %}
+				{% include 'Frontend/Products/_card.html.twig' %}
+			{% endfor %}
+		</div>
+	</section>
+{% endblock %}

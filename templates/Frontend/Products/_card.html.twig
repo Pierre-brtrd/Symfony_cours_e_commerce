@@ -1,0 +1,11 @@
+<div class="col-md-4">
+	<div class="card">
+		<img src="{{ vich_uploader_asset(product) }}" class="card-img-top" alt="{{ product.title }}">
+		<div class="card-body">
+			<h2 class="card-text">{{ product.title }}</h2>
+			<p class="card-text">{{ product.shortDescription|striptags|slice(0, 150) ~ '...' }}</p>
+			<p class="card-text card-price">{{ product.priceTTC|format_currency('EUR') }}</p>
+			<a href="{{ path('app.products.show', {code: product.code}) }}" class="btn btn-primary mt-1">Voir le produit</a>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,11 @@
+table {
+    td {
+        img {
+            display: block;
+            margin: auto;
+            max-width: 7em;
+            object-fit: contain;
+            box-shadow: $box-shadow-card;
+        }
+    }
+}

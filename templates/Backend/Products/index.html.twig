@@ -1,0 +1,69 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Administration des produits
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	{% import 'Backend/Common/_deleteForm.html.twig' as common %}
+	<section class="container mt-2">
+		<h1 class="text-center">Administration des produits</h1>
+		<a href="{{ path('admin.products.create') }}" class="btn btn-primary mt-2 mb-3">Créer un produit</a>
+		<div class="table-responsive">
+			<table class="table table-bordered align-middle" data-toggle="table" data-sort-name="createdAt" data-sort-order="desc" data-pagination="true" data-search="true" data-show-columns="true">
+				<thead>
+					<th scope="col">Id</th>
+					<th scope="col" data-sortable="true" data-field="title">Titre</th>
+					<th scope="col" data-field="code">Code</th>
+					<th scope="col" data-field="image">Image</th>
+					<th scope="col" data-sortable="true" data-field="createdAt">Crée le</th>
+					<th scope="col" data-sortable="true" data-field="updatedAt">Modifié le</th>
+					<th scope="col" data-sortale="true" data-field="price">Prix HT</th>
+					<th scope="col" data-sortable="true" data-fied="tva">TVA</th>
+					<th scope="col" data-sortable="true" data-field="enable">Visible</th>
+					<th scope="col">Actions</th>
+				</thead>
+				<tbody class="table-group-divider">
+					{% for product in products %}
+						<tr>
+							<td scope="row">{{ product.id }}</td>
+							<td>{{ product.title }}</td>
+							<td>{{ product.code }}</td>
+							<td>
+								<img src="{{ vich_uploader_asset(product) }}" class="rounded" alt="{{ product.title }}">
+							</td>
+							<td>
+								<span style="display:none">{{ product.createdAt|date('U') }}</span>
+								{{ product.createdAt|format_datetime('short', 'short') }}
+							</td>
+							<td>
+								<span style="display:none">{{ product.updatedAt|date('U') }}</span>
+								{{ product.updatedAt|format_datetime('short', 'short') }}
+							</td>
+							<td>{{ product.priceHT|format_currency('EUR') }}</td>
+							<td>{{ product.taxe.rate * 100 }}%</td>
+							<td>
+								<span class="badge bg-{{ product.enable ? 'success' : 'danger' }}">{{ product.enable ? 'Actif' : 'Non actif' }}</span>
+							</td>
+							<td>
+								<div class="d-flex gap-2 align-items-center">
+									<a href="{{ path('admin.products.edit', {id: product.id}) }}" class="btn btn-warning">Modifier</a>
+									{{ common.deleteForm(path('admin.products.delete', {id: product.id}), product.id)}}
+								</div>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td scope="row" colspan="10">
+								<div class="alert alert-info">
+									Il n'y a pas encore d'utilisateur
+								</div>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+{% endblock %}

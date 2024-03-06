@@ -1,0 +1,10 @@
+form {
+    .vich-image {
+        img {
+            margin-top: 1em;
+            border-radius: $border-radius;
+            box-shadow: $box-shadow-card;
+            width: 50%;
+        }
+    }
+}

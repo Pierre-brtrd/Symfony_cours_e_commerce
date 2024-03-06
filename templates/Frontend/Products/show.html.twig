@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ product.title }}
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2 product-show">
+		<h1 class="text-center">
+			Découvrez notre produit
+			{{ product.title }}
+		</h1>
+		<a href="{{ path('app.products.index') }}" class="btn btn-primary">Retour à la liste</a>
+		<div class="row mt-4 product-show-header">
+			<div class="col-md-6">
+				<img src="{{ vich_uploader_asset(product) }}" alt="{{ product.title }}" loading="lazy" class="product-main-img">
+			</div>
+			<div class="col-md-6">
+				<h2 class="product-show-title">{{ product.title }}</h2>
+				<p class="product-show-short-desc">{{ product.shortDescription|sanitize_html }}</p>
+				<p class="product-show-price">{{ product.priceTTC|format_currency('EUR') }}</p>
+			</div>
+		</div>
+		<div class="product-desc-content mt-4 card p-3 mb-4">
+			<strong>Description:</strong>
+			{{ product.description|sanitize_html }}
+		</div>
+	</section>
+{% endblock %}
