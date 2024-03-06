@@ -26,6 +26,8 @@
 				<input type="password" id="password" name="_password" class="form-control" placeholder="S3CR3T">
 			</div>
 
+			<a href="{{ path('app.register') }}" class="mb-3">Pas encore de compte ?</a>
+
 			<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
 			<button type="submit" class="btn btn-primary">Connexion</button>

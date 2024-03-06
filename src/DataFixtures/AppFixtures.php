@@ -18,6 +18,8 @@ class AppFixtures extends Fixture
     {
         $user = (new User())
             ->setEmail('pierre@test.com')
+            ->setFirstName('Pierre')
+            ->setLastName('Bertrand')
             ->setPassword(
                 $this->hasher->hashPassword(
                     new User(),

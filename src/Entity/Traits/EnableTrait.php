@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait EnableTrait
 {
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => false])]
     private ?bool $enable = null;
 
     public function isEnable(): ?bool
