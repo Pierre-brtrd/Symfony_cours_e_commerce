@@ -1,0 +1,18 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Modification de la taxe
+	{{ taxe.name }}
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Modifier la taxe
+			{{ taxe.name }}</h1>
+
+		{% include 'Backend/Taxes/_form.html.twig' with { button_label: 'Modifier' } %}
+		<a href="{{ path('admin.taxes.index') }}" class="btn btn-primary mt-4">Retour à la liste</a>
+
+	</section>
+{% endblock %}

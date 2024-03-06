@@ -1,0 +1,53 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Administration des taxes
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	{% import 'Backend/Common/_deleteForm.html.twig' as common %}
+	<section class="container mt-2">
+		<h1 class="text-center">Administration des taxes</h1>
+		<a href="{{ path('admin.taxes.create') }}" class="btn btn-primary">Créer une taxe</a>
+		<div class="table-responsive">
+			<table class="table table-bordered align-middle" data-toggle="table" data-sort-name="rate" data-sort-order="desc" data-pagination="true" data-search="true" data-show-columns="true">
+				<thead>
+					<tr>
+						<th data-field="id" data-sortable="true">Id</th>
+						<th data-field="name" data-sortable="true">Nom</th>
+						<th data-field="rate" data-sortable="true">Taux</th>
+						<th data-field="enable" data-sortable="true">Activé</th>
+						<th data-field="actions" data-sortable="false">actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for taxe in taxes %}
+						<tr>
+							<td>{{ taxe.id }}</td>
+							<td>{{ taxe.name }}</td>
+							<td>{{ taxe.rate }}</td>
+							<td>
+								<span class="badge bg-{{ taxe.enable ? 'success' : 'danger' }}">{{ taxe.enable ? 'Actif' : 'Non actif' }}</span>
+							</td>
+							<td>
+								<div class="d-flex align-items-center gap-2">
+									<a href="{{ path('admin.taxes.edit', {'id': taxe.id}) }}" class="btn btn-warning">Modifier</a>
+									{{ common.deleteForm(path('admin.taxes.delete', {id: taxe.id}), taxe.id) }}
+								</div>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="5">
+								<div class="alert alert-info" role="alert">
+									Aucune taxe n'a été trouvé
+								</div>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+{% endblock %}
