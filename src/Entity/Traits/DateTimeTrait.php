@@ -40,7 +40,9 @@ trait DateTimeTrait
     #[ORM\PrePersist]
     public function setAutoCreatedAt(): void
     {
-        $this->createdAt = new DateTimeImmutable();
+        if (null === $this->createdAt) {
+            $this->createdAt = new DateTimeImmutable();
+        }
     }
 
     #[ORM\PreUpdate]

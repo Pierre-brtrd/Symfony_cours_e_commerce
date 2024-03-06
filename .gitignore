@@ -8,6 +8,7 @@
 /var/
 /vendor/
 /.yarn/
+/public/images/products
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
