@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Validation de commande adresse
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Validation de commande: Adresse</h1>
+		<a href="{{ path('app.cart') }}" class="btn btn-primary mt-2">Retour au panier</a>
+		<div class="row mt-4">
+			<div class="col-md-7">
+				{{ form_start(form, {attr: {class: 'card'}}) }}
+				<h2 class="card-header bg-primary text-light">Votre Adresse</h2>
+				<div class="card-body">
+					{{ form_widget(form) }}
+					<button type="submit" class="btn btn-primary">Valider</button>
+				</div>
+				{{ form_end(form) }}
+			</div>
+			<div class="col-md-5">
+				{% include 'Frontend/Cart/_cartTotals.html.twig' with { isInCart: 'none' } %}
+			</div>
+		</div>
+	</section>
+{% endblock %}

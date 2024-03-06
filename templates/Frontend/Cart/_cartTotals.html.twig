@@ -1,0 +1,34 @@
+<div class="card mt-4 mt-md-0">
+	<h2 class="card-header">Totals</h2>
+	<ul class="list-group list-group-flush">
+		<li class="list-group-item d-flex justify-content-between">
+			<div>
+				<b>Total HT:</b>
+			</div>
+			<span>
+				<b>{{ cart.totalHT|format_currency('EUR') }}</b>
+			</span>
+		</li>
+		<li class="list-group-item d-flex justify-content-between">
+			<div>
+				<b>Taxes:</b>
+			</div>
+			<span>
+				<b>{{ cart.totalTaxe|format_currency('EUR') }}</b>
+			</span>
+		</li>
+		<li class="list-group-item d-flex justify-content-between">
+			<div>
+				<b>Total TTC:</b>
+			</div>
+			<span>
+				<b>{{ cart.total|format_currency('EUR') }}</b>
+			</span>
+		</li>
+	</ul>
+	{% if isInCart|default('yes') == 'yes'  %}
+		<div class="card-body">
+			<a href="{{ path('app.checkout.address') }}" class="btn btn-primary w-100">Payer</a>
+		</div>
+	{% endif %}
+</div>

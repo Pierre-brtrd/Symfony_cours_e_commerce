@@ -4,6 +4,7 @@ namespace App\Controller\Frontend;
 
 use App\Form\CartType;
 use App\Manager\CartManager;
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class CartController extends AbstractController
 {
     #[Route('', '', methods: ['GET', 'POST'])]
-    public function index(CartManager $cartManager, Request $request): Response
+    public function index(CartManager $cartManager, Request $request, ProductRepository $productRepo): Response
     {
         $cart = $cartManager->getCurrentCart();
 
