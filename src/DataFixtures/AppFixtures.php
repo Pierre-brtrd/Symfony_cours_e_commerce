@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Categorie;
 use App\Entity\Product;
 use App\Entity\Taxe;
 use App\Entity\User;
@@ -41,16 +42,36 @@ class AppFixtures extends Fixture
         $manager->persist($user);
 
         $tva = (new Taxe)
+            ->setName('TVA 10%')
+            ->setRate(0.10)
+            ->setEnable(true);
+
+        $manager->persist($tva);
+
+        $tva = (new Taxe)
             ->setName('TVA 20%')
             ->setRate(0.20)
             ->setEnable(true);
 
         $manager->persist($tva);
 
-        for ($i = 0; $i < 10; ++$i) {
+        $tagsArray = ['Mobile', 'Tablette', 'Ordinateur', 'Accessoire', 'Jeux', 'Console', 'TV', 'Son', 'Photo', 'Vidéo'];
+
+        for ($i = 0; $i < 10; $i++) {
+            $categorie = (new Categorie)
+                ->setName($tagsArray[$i])
+                ->setEnable(true);
+
+            $manager->persist($categorie);
+
+            $categories[] = $categorie;
+        }
+
+        for ($i = 0; $i < 50; ++$i) {
             $product = (new Product)
                 ->setTitle($this->faker->unique()->word())
                 ->setDescription(file_get_contents('https://loripsum.net/api/3/short/link/ul'))
+                ->setShortDescription($this->faker->sentence(10, true))
                 ->setTaxe($tva)
                 ->setPriceHT($this->faker->randomFloat(2, 10, 1000))
                 ->setImage($this->uploadImageArticle())
@@ -58,6 +79,10 @@ class AppFixtures extends Fixture
                 ->setCreatedAt(
                     \DateTimeImmutable::createFromMutable($this->faker->dateTimeThisYear())
                 );
+
+            for ($j = 0; $j < $this->faker->numberBetween(0, 4); ++$j) {
+                $product->addCategory($categories[$this->faker->numberBetween(0, 9)]);
+            }
 
             $manager->persist($product);
         }

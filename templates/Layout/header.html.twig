@@ -1,12 +1,12 @@
 <header class="sticky-top">
 	<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
 		<div class="container-fluid">
-			<a class="navbar-brand" href="#">E-commerce Symfo</a>
+			<a class="navbar-brand" href="{{ path('app.home') }}">E-commerce Symfo</a>
 			<button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation"></button>
 			<div class="collapse navbar-collapse" id="collapsibleNavId">
 				<ul class="navbar-nav me-auto mt-2 mt-lg-0">
 					<li class="nav-item">
-						<a class="nav-link" href="#">Home
+						<a class="nav-link" href="{{ path('app.home') }}">Home
 						</a>
 					</li>
 					<li class="nav-item">
@@ -45,8 +45,12 @@
 						</li>
 					{% endif %}
 					<li class="navbar-item ms-2">
-						<a href="{{ path('app.cart') }}" class="btn btn-primary">
+						<a href="{{ path('app.cart') }}" class="btn btn-primary cart-link-header">
 							<i class="bi bi-cart-fill"></i>
+							{% set cartNumber = getCartNumber() %}
+							{% if cartNumber > 0 %}
+								<span class="badge badge-pill badge-light cart-number-count">{{ cartNumber }}</span>
+							{% endif %}
 						</a>
 					</li>
 				</ul>

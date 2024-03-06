@@ -13,6 +13,7 @@
 	</section>
 	<section class="container mt-2">
 		<h1 class="text-center mb-2">Nos derniers produits</h1>
+		<a href="{{ path('app.products.index') }}" class="btn btn-primary mb-4">Voir les produits</a>
 		<div class="row">
 			{% for product in products %}
 				{% include 'Frontend/Products/_card.html.twig' %}

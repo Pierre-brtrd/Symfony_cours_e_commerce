@@ -56,6 +56,7 @@ class ProductRepository extends ServiceEntityRepository
         return $query
             ->orderBy('p.createdAt', 'DESC')
             ->setMaxResults($limit)
+            ->groupBy('p.id')
             ->getQuery()
             ->getResult();
     }

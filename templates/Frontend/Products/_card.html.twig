@@ -4,14 +4,14 @@
 		<div class="card-body">
 			<h2 class="card-text">{{ product.title }}</h2>
 			<p class="card-text">
-				{% for category in product.categories %}
-					<div class="d-flex align-items-center flex-wrap gap-2">
+				<div class="d-flex align-items-center flex-wrap gap-2">
+					{% for category in product.categories %}
 						<span class="badge bg-secondary">
 							<i class="bi bi-tags-fill"></i>
 							{{ category.name }}
 						</span>
-					</div>
-				{% endfor %}
+					{% endfor %}
+				</div>
 			</p>
 			<p class="card-text">{{ product.shortDescription|striptags|slice(0, 150) ~ '...' }}</p>
 			<p class="card-text card-price">{{ product.priceTTC|format_currency('EUR') }}</p>

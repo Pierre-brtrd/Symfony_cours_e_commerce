@@ -1,0 +1,17 @@
+.cart-link-header {
+    position: relative;
+
+    .cart-number-count {
+        position: absolute !important;
+        top: 90%;
+        right: -45%;
+        transform: translate(-50%, -50%);
+        background: $white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        padding: 5px;
+        color: $text-color;
+        font-size: 15px;
+    }
+}

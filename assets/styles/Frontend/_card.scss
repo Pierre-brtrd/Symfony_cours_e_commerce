@@ -5,4 +5,8 @@
         font-size: $h4-font-size;
         font-weight: $font-weight-bold;
     }
+
+    .card-img-top {
+        aspect-ratio: 16/9;
+    }
 }
