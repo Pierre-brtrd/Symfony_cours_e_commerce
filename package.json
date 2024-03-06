@@ -26,6 +26,7 @@
         "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/assets",
         "bootstrap": "^5.3.3",
         "bootstrap-icons": "^1.11.3",
+        "bootstrap-table": "^1.22.3",
         "jquery": "^3.7.1"
     }
 }

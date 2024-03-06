@@ -2465,6 +2465,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bootstrap-table@npm:^1.22.3":
+  version: 1.22.3
+  resolution: "bootstrap-table@npm:1.22.3"
+  peerDependencies:
+    jquery: 3
+  checksum: 89467676ad199e966c6a5fd169af9b6a8e11836712c04cdc5a7a8774c04196a49a17f6eb390d5ce54fb3a2791bea99a0f3deb8f09387278493a7de5793fbece2
+  languageName: node
+  linkType: hard
+
 "bootstrap@npm:^5.3.3":
   version: 5.3.3
   resolution: "bootstrap@npm:5.3.3"
@@ -5933,6 +5942,7 @@ __metadata:
     "@symfony/webpack-encore": "npm:^4.0.0"
     bootstrap: "npm:^5.3.3"
     bootstrap-icons: "npm:^1.11.3"
+    bootstrap-table: "npm:^1.22.3"
     core-js: "npm:^3.23.0"
     jquery: "npm:^3.7.1"
     regenerator-runtime: "npm:^0.13.9"

@@ -1,0 +1,50 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Administration des users
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	{% import 'Backend/Common/_deleteForm.html.twig' as common %}
+	<section class="container mt-2">
+		<h1 class="text-center mb-4">Administration des users</h1>
+		<div class="table-responsive">
+			<table class="table table-bordered align-middle" data-toggle="table" data-sort-name="name" data-sort-order="asc" data-pagination="true" data-search="true" data-show-columns="true">
+				<thead>
+					<th scope="col">Id</th>
+					<th scope="col" data-sortable="true" data-field="name">Nom</th>
+					<th scope="col" data-field="email">Email</th>
+					<th scope="col" data-sortable="true" data-field="createdAt">Inscrit le</th>
+					<th scope="col" data-sortable="true" data-field="updatedAt">Modifié le</th>
+					<th scope="col">Actions</th>
+				</thead>
+				<tbody class="table-group-divider">
+					{% for user in users %}
+						<tr>
+							<td scope="row">{{ user.id }}</td>
+							<td>{{ user.fullName }}</td>
+							<td>{{ user.email }}</td>
+							<td>{{ user.createdAt|format_datetime('short', 'short') }}</td>
+							<td>{{ user.updatedAt|format_datetime('short', 'short') }}</td>
+							<td>
+								<div class="d-flex gap-2 align-items-center">
+									<a href="#" class="btn btn-warning">Modifier</a>
+									{{ common.deleteForm('#', user.id)}}
+								</div>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td scope="row" colspan="6">
+								<div class="alert alert-info">
+									Il n'y a pas encore d'utilisateur
+								</div>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+{% endblock %}
