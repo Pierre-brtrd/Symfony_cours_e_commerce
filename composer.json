@@ -1,5 +1,5 @@
 {
-    "name": "pierre-brtrd/Symfony_cours_e_commerce",
+    "name": "pierre-brtrd/symfony_cours_e_commerce",
     "description": "Cours sur symfony pour e-commerce",
     "type": "project",
     "license": "proprietary",
@@ -102,6 +102,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.5",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "7.0.*",
         "symfony/css-selector": "7.0.*",
