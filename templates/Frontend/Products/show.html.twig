@@ -19,7 +19,10 @@
 			<div class="col-md-6">
 				<h2 class="product-show-title">{{ product.title }}</h2>
 				<p class="product-show-short-desc">{{ product.shortDescription|sanitize_html }}</p>
-				<p class="product-show-price">{{ product.priceTTC|format_currency('EUR') }}</p>
+				<p class="product-show-price mb-3">{{ product.priceTTC|format_currency('EUR') }}</p>
+				{{ form_start(form) }}
+				{{ form_widget(form) }}
+				{{ form_end(form) }}
 			</div>
 		</div>
 		<div class="product-desc-content mt-4 card p-3 mb-4">
