@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Categorie;
 use App\Entity\Product;
 use App\Entity\Taxe;
 use Doctrine\ORM\EntityRepository;
@@ -26,6 +27,22 @@ class ProductType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Titre du produit'
                 ]
+            ])
+            ->add('categories', EntityType::class, [
+                'label' => 'Catégories',
+                'placeholder' => 'Choisir une catégorie',
+                'class' => Categorie::class,
+                'choice_label' => 'name',
+                'query_builder' => function (EntityRepository $er): QueryBuilder {
+                    return $er->createQueryBuilder('c')
+                        ->where('c.enable = :enable')
+                        ->setParameter('enable', true)
+                        ->orderBy('c.name', 'ASC');
+                },
+                'expanded' => false,
+                'multiple' => true,
+                'autocomplete' => true,
+                'by_reference' => false,
             ])
             ->add('shortDescription', TextareaType::class, [
                 'label' => 'Description courte',

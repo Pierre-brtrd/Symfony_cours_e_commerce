@@ -23,6 +23,7 @@
         "@hotwired/stimulus": "^3.2.2",
         "@popperjs/core": "^2.11.8",
         "@symfony/stimulus-bridge": "^3.2.2",
+        "@symfony/ux-autocomplete": "file:vendor/symfony/ux-autocomplete/assets",
         "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/assets",
         "bootstrap": "^5.3.3",
         "bootstrap-icons": "^1.11.3",

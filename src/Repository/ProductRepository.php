@@ -23,7 +23,10 @@ class ProductRepository extends ServiceEntityRepository
 
     public function createListShop(bool $includeDisable = false, ?int $max = null): array
     {
-        $query = $this->createQueryBuilder('p');
+        $query = $this->createQueryBuilder('p')
+            ->select('p, c, t')
+            ->leftJoin('p.categories', 'c')
+            ->join('p.taxe', 't');
 
         if (!$includeDisable) {
             $query->andWhere('p.enable = true');
