@@ -1,20 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}
+	Site e-commerce
+	{{ parent() }}
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/pierre/Formations/Symfony/e-commerce/src/Controller/Frontend/HomeController.php</code></li>
-        <li>Your template at <code>/Users/pierre/Formations/Symfony/e-commerce/templates/frontend/home/index.html.twig</code></li>
-    </ul>
-</div>
+	<section class="banner-hero-home">
+		<div class="banner-hero-home-header">
+			<h1>Welcome sur le site e-commerce Symfony</h1>
+		</div>
+	</section>
+	<section class="container mt-2">
+		<h1 class="text-center mb-2">Nos derniers produits</h1>
+		<div class="row">
+			{% for product in products %}
+				{% include 'Frontend/Products/_card.html.twig' %}
+			{% endfor %}
+		</div>
+	</section>
 {% endblock %}

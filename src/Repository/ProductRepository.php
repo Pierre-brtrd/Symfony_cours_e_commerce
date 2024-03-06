@@ -42,6 +42,24 @@ class ProductRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findLatest(int $limit, bool $includeDisable = false): array
+    {
+        $query = $this->createQueryBuilder('p')
+            ->select('p, c, t')
+            ->leftJoin('p.categories', 'c')
+            ->join('p.taxe', 't');
+
+        if (!$includeDisable) {
+            $query->andWhere('p.enable = true');
+        }
+
+        return $query
+            ->orderBy('p.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Product[] Returns an array of Product objects
     //     */
