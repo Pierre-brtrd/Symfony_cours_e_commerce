@@ -43,6 +43,28 @@ class Order
         $this->items = new ArrayCollection();
     }
 
+    public function getTotalHT(): float
+    {
+        $total = 0;
+
+        foreach ($this->getItems() as $item) {
+            $total += $item->getTotal(false);
+        }
+
+        return $total;
+    }
+
+    public function getTotalTaxe(): float
+    {
+        $total = 0;
+
+        foreach ($this->getItems() as $item) {
+            $total += $item->getTaxeAmount();
+        }
+
+        return $total;
+    }
+
     /**
      * Calculates the order total.
      *

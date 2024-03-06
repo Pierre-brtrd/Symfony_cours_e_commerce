@@ -44,9 +44,18 @@ class OrderItem
      *
      * @return float|int
      */
-    public function getTotal(): float
+    public function getTotal(bool $whithTaxe = true): float
     {
-        return $this->getProduct()->getPriceTTC() * $this->getQuantity();
+        if ($whithTaxe) {
+            return $this->getProduct()->getPriceTTC() * $this->getQuantity();
+        }
+
+        return $this->getProduct()->getPriceHT() * $this->getQuantity();
+    }
+
+    public function getTaxeAmount(): float
+    {
+        return ($this->getProduct()->getPriceTTC() - $this->getProduct()->getPriceHT()) * $this->getQuantity();
     }
 
     public function getId(): ?int

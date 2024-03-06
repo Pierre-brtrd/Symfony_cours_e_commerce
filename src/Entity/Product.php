@@ -137,7 +137,7 @@ class Product
 
     public function getPriceTTC(): float
     {
-        return $this->priceHT * (1 + $this->taxe->getRate() / 100);
+        return $this->priceHT * (1 + $this->taxe->getRate());
     }
 
     public function getTaxe(): ?Taxe

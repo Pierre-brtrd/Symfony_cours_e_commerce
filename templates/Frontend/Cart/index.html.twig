@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Votre panier
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Votre Panier</h1>
+		{% if cart.items|length > 0 %}
+			<div class="row mt-4">
+				<div class="col-md-8">
+					{{ form_start(form) }}
+					<div class="card">
+						<div class="card-header bg-dark d-flex align-items-center">
+							<h2 class="text-light">Produits</h2>
+							<div class="ms-auto d-flex gap-2 align-items-center">
+								{{ form_row(form.save) }}
+								{{ form_row(form.clear) }}
+							</div>
+						</div>
+
+						<ul class="list-group list-group-flush">
+							{% for item in form.items %}
+								{% set product = item.vars.data.product %}
+								<li class="list-group-item d-flex align-items-center">
+									<div class="flex-fill me-2">
+										<img src="{{ vich_uploader_asset(product) }}" width="100" loading="lazy" alt="{{ product.title }}">
+									</div>
+									<div class="flex-fill me-2">
+										<h2 class="my-0">{{ product.title }}</h2>
+										<small>{{ product.shortDescription|slice(0, 50) ~ '...' }}</small>
+										<div class="d-flex gap-3 align-items-end">
+											{{ form_row(item.quantity) }}
+											{{ form_row(item.remove) }}
+										</div>
+									</div>
+									<div class="flex-fill me-4">
+										<strong>{{ product.priceTTC|format_currency('EUR') }}</strong>
+									</div>
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+					{{ form_end(form) }}
+				</div>
+				<div class="col-md-4">
+					<div class="card mt-4 mt-md-0">
+						<h2 class="card-header">Totals</h2>
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item d-flex justify-content-between">
+								<div>
+									<b>Total HT:</b>
+								</div>
+								<span>
+									<b>{{ cart.totalHT|format_currency('EUR') }}</b>
+								</span>
+							</li>
+							<li class="list-group-item d-flex justify-content-between">
+								<div>
+									<b>Taxes:</b>
+								</div>
+								<span>
+									<b>{{ cart.totalTaxe|format_currency('EUR') }}</b>
+								</span>
+							</li>
+							<li class="list-group-item d-flex justify-content-between">
+								<div>
+									<b>Total TTC:</b>
+								</div>
+								<span>
+									<b>{{ cart.total|format_currency('EUR') }}</b>
+								</span>
+							</li>
+						</ul>
+						<div class="card-body">
+							<a href="#" class="btn btn-primary w-100">Payer</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% else %}
+			<div class="alert alert-info">
+				<p>Votre panier est vide !</p>
+				<p>Retrouvez la liste des produits en
+					<a href="{{ path('app.products.index') }}">cliquant ici</a>
+				</p>
+			</div>
+		{% endif %}
+	</section>
+{% endblock %}
