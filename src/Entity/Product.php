@@ -76,9 +76,13 @@ class Product
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'product', orphanRemoval: true)]
     private Collection $orderItems;
 
+    #[ORM\ManyToMany(targetEntity: Categorie::class, mappedBy: 'products')]
+    private Collection $categories;
+
     public function __construct()
     {
         $this->orderItems = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
 
@@ -234,6 +238,33 @@ class Product
             if ($orderItem->getProduct() === $this) {
                 $orderItem->setProduct(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Categorie>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Categorie $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Categorie $category): static
+    {
+        if ($this->categories->removeElement($category)) {
+            $category->removeProduct($this);
         }
 
         return $this;
