@@ -34,6 +34,11 @@ class Address
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    public function __toString(): string
+    {
+        return $this->address . ', ' . $this->zipCode . ' ' . $this->city;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

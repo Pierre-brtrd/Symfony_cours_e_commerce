@@ -45,6 +45,19 @@ class OrderRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findOrder(): array
+    {
+        return $this->createQueryBuilder('o')
+            ->select('o, p, u')
+            ->andWhere('o.status != :status')
+            ->setParameter('status', Order::STATUS_CART)
+            ->join('o.user', 'u')
+            ->join('o.payments', 'p')
+            ->orderBy('o.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Order[] Returns an array of Order objects
     //     */

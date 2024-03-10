@@ -29,6 +29,10 @@ class Order
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    private ?string $number = null;
+
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'orderRef', orphanRemoval: true, cascade: ["persist", "remove"])]
     private Collection $items;
 
@@ -50,6 +54,12 @@ class Order
     {
         $this->items = new ArrayCollection();
         $this->payments = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function setAutoNumber(): void
+    {
+        $this->number = "#" . (new \DateTime('now'))->format('YmdHis');
     }
 
     public function getTotalHT(): float
@@ -193,6 +203,18 @@ class Order
                 $payment->setOrderRef(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNumber(): ?string
+    {
+        return $this->number;
+    }
+
+    public function setNumber(string $number): static
+    {
+        $this->number = $number;
 
         return $this;
     }

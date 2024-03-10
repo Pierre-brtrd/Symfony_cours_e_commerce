@@ -2,6 +2,7 @@
 
 namespace App\Factory;
 
+use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Entity\Payment;
 use App\Event\StripeEvent;
@@ -28,6 +29,10 @@ class StripeFactory
     {
         $order = $payment->getOrderRef();
         Assert::notNull($order, 'Order must not be null');
+
+        if ($order->getStatus() !== Order::STATUS_CART) {
+            throw new \InvalidArgumentException('Order must be in cart status');
+        }
 
         return Session::create([
             'mode' => 'payment',
