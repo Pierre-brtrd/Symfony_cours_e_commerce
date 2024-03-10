@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Merci pour votre commande
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Merci pour votre commande</h1>
+		{% if payment.status == 'paid' and payment.orderRef.status == 'paid' %}
+			<div class="alert alert-success" role="alert">
+				<p class="mb-0">Votre commande a bien été prise en compte, nous vous informerons dans les plus bref délais de l'avancée de la livraison</p>
+			</div>
+		{% else %}
+			<div class="alert alert-danger" role="alert">
+				<p class="mb-0">Le paiement n'a pas abouti, veuillez contacter votre banque</p>
+			</div>
+		{% endif %}
+		<h2>Récapitulatif de votre commande</h2>
+		<div class="row mt-4">
+			<div class="col-md-7">
+				{% include 'Frontend/Cart/_listItems.html.twig' with { cart: payment.orderRef } %}
+			</div>
+			<div class="col-md-5">
+				{% include 'Frontend/Cart/_cartTotals.html.twig' with { isInCart: 'none', cart: payment.orderRef } %}
+			</div>
+		</div>
+	</section>
+{% endblock %}

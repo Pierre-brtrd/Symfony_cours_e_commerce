@@ -1,0 +1,48 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+    détails de la commande {{ order.number }}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+{% import 'Backend/Common/_deleteForm.html.twig' as common %}
+    <section class="container mt-2 mb-4">
+        <h1 class="text-center">Détails de la commande {{ order.number }}</h1>
+        <a href="{{ path('admin.orders.index') }}" class="btn btn-primary">Retour à la liste</a>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <h3 class="card-header bg-primary text-light">Informations de la commande</h3>
+                    <div class="card-body">
+                        <p class="card-text">Commande passée le: {{ order.updatedAt|format_datetime('short', 'short') }}</p>
+                        <p class="card-text">Status de la commande: {{ common.status(order.status) }}</p>
+                        <p class="card-text">Paiement: 
+                        {% for payment in order.payments %}
+                            {{ common.status(payment.status) }}  
+                        {% endfor %}
+                        </p>  
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <h3 class="card-header bg-primary text-light">Informations sur le client</h3>
+                    <div class="card-body">
+                        <p class="card-text">Nom du client: {{ order.user.fullName }}</p>
+                        <p class="card-text">Email du client: {{ order.user.email }}</p>
+                        <p class="card-text">Adresse du client: {{ order.user.addresses.last }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+			<div class="col-md-7">
+				{% include 'Frontend/Cart/_listItems.html.twig' with {cart: order} %}
+			</div>
+			<div class="col-md-5">
+				{% include 'Frontend/Cart/_cartTotals.html.twig' with { isInCart: 'none', cart: order } %}
+			</div>
+		</div>
+    </section>
+{% endblock %}

@@ -1,6 +1,26 @@
-{% macro deleteForm(action, id) %}
+{% macro deleteForm(action, id, label) %}
 	<form action="{{ action|default('#') }}" method="POST" onsubmit="return confirm('Êtes vous sûr de vouloir supprimer cet objet ?')">
 		<input type="hidden" name="token" value="{{ csrf_token('delete' ~ id|default(0)) }}">
-		<button type="submit" class="btn btn-danger">Supprimer</button>
+		<button type="submit" class="btn btn-danger">{{ label|default('Supprimer') }}</button>
 	</form>
+{% endmacro %}
+
+{% macro status(status) %}
+	{% if status == "cart" %}
+		<span class="badge bg-secondary">Panier</span>
+	{% elseif status == "new" %}
+		<span class="badge bg-primary">Nouveau</span>
+	{% elseif status == 'await_paid' %}
+		<span class="badge bg-dark">Attente de paiement</span>
+	{% elseif status == "paid" %}
+		<span class="badge bg-success">Payée</span>
+	{% elseif status == "checkout_completed" %}
+		<span class="badge bg-info">Checkout finalisé</span>
+	{% elseif status == "payment_failed" %}
+		<span class="badge bg-danger">Refusé</span>
+	{% elseif status == "cancelled" %}
+		<span class="badge bg-warning">Annulée</span>
+	{% else %}
+		<span class="badge bg-gray">{{ status }}</span>
+	{% endif %}
 {% endmacro %}
