@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	{% set user = app.user %}
+	<section class="container mt-2">
+		<h1 class="text-center">Mon compte</h1>
+		<div class="row my-4">
+			{% include 'Frontend/User/_sidebar.html.twig' %}
+			{% block content %}{% endblock %}
+		</div>
+	</section>
+{% endblock %}

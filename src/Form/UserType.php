@@ -70,6 +70,10 @@ class UserType extends AbstractType
                 ]
             ]);
 
+        if ($options['isEdit']) {
+            $builder->remove('password');
+        }
+
         if ($options['isAdmin']) {
             $builder->remove('password')
                 ->add('enable', CheckboxType::class, [
@@ -94,6 +98,7 @@ class UserType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'isAdmin' => false,
+            'isEdit' => false,
             'sanitize_html' => true,
         ]);
     }

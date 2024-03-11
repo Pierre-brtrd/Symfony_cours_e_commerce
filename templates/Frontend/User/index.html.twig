@@ -1,0 +1,33 @@
+{% extends 'Frontend/User/baseAccount.html.twig' %}
+
+{% block title %}
+	Mon compte
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}
+	<div class="col-12 col-md-8 col-lg-9">
+		<p class="text-muted mb-2">Gérer vos informations personnelles et préférences</p>
+		<div class="card border-1 shadow-lg">
+			<div class="card-body">
+				<h2 class="card-title">Informations personnelles:</h2>
+				<p class="card-text">
+					<strong>Nom:</strong>
+					{{ user.lastName }}</p>
+				<p class="card-text">
+					<strong>Prénom:</strong>
+					{{ user.firstName }}</p>
+				<p class="card-text">
+					<strong>Email:</strong>
+					{{ user.email }}</p>
+				<p class="card-text">
+					<strong>Client depuis le:</strong>
+					{{ user.createdAt|format_datetime('full', 'none') }}</p>
+				<div class="d-flex flex-wrap gap-2">
+					<a href="#" class="btn btn-primary">Modifier</a>
+					<a href="#" class="btn btn-primary">Changer votre mot de passe</a>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -36,6 +36,9 @@
 							</li>
 						{% endif %}
 						<li class="navbar-item">
+							<a href="{{ path('app.user.index') }}" class="btn btn-light">Mon compte</a>
+						</li>
+						<li class="navbar-item ms-2">
 							<a href="{{ path('app.logout') }}" class="btn btn-danger text-light">Déconnexion</a>
 						</li>
 					{% else %}

@@ -1,0 +1,21 @@
+{% extends 'Frontend/User/baseAccount.html.twig' %}
+
+{% block title %}
+	Ajouter une adresse
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}
+	<div class="col-12 col-md-8 col-lg-9">
+		<p class="text-muted mb-2">Ajouter une adresse</p>
+		<a href="{{ path('app.user.address') }}" class="btn btn-primary my-3">Retour à la liste</a>
+		<div class="card">
+			<div class="card-body">
+				{{ form_start(form) }}
+				{{ form_widget(form) }}
+				<button type="submit" class="btn btn-primary">Ajouter</button>
+				{{ form_end(form) }}
+			</div>
+		</div>
+	</div>
+{% endblock %}

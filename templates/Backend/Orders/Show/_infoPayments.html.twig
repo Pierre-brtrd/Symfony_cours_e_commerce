@@ -1,0 +1,13 @@
+{% import 'Backend/Common/_deleteForm.html.twig' as common %}
+
+<div class="card mt-2">
+	<h3 class="card-header bg-primary text-light">Informations sur le paiement</h3>
+	<div class="card-body">
+		{% for payment in order.payments %}
+			<p class="card-text">Paiement le
+				{{ payment.createdAt|format_datetime('short', 'short') }}:
+				{{ common.status(payment.status) }}
+			</p>
+		{% endfor %}
+	</div>
+</div>

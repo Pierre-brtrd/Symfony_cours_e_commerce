@@ -1,0 +1,20 @@
+<aside class="col-12 col-md-4 col-lg-3">
+	<nav class="list-group">
+		<a class="list-group-item list-group-item-action {{ app.request.get('_route') == 'app.user.index' ? 'active'}}" href="{{ path('app.user.index') }}">
+			<i class="bi bi-house-fill"></i>
+			Tableau de bord
+		</a>
+		<a class="list-group-item list-group-item-action {{ app.request.get('_route') == 'app.user.edit' ? 'active'}}" href="{{ path('app.user.edit') }}">
+			<i class="bi bi-person-badge-fill"></i>
+			Informations personnelles
+		</a>
+		<a class="list-group-item list-group-item-action {{ app.request.get('_route') == 'app.user.address' ? 'active'}}" href="{{ path('app.user.address') }}">
+			<i class="bi bi-person-vcard-fill"></i>
+			Carnet d’adresses
+		</a>
+		<a class="list-group-item list-group-item-action {{ app.request.get('_route') == 'app.user.orders' ? 'active'}}" href="{{ path('app.user.orders') }}">
+			<i class="bi bi-cart-fill"></i>
+			Historique des commandes
+		</a>
+	</nav>
+</aside>
