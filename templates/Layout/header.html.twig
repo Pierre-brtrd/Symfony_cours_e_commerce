@@ -36,10 +36,12 @@
 							</li>
 						{% endif %}
 						<li class="navbar-item">
-							<a href="{{ path('app.user.index') }}" class="btn btn-light">Mon compte</a>
+							<a href="{{ path('app.logout') }}" class="btn btn-danger text-light">Déconnexion</a>
 						</li>
 						<li class="navbar-item ms-2">
-							<a href="{{ path('app.logout') }}" class="btn btn-danger text-light">Déconnexion</a>
+							<a href="{{ path('app.user.index') }}" class="btn btn-light">
+								<i class="bi bi-person-circle"></i>
+							</a>
 						</li>
 					{% else %}
 						<li class="navbar-item me-2">

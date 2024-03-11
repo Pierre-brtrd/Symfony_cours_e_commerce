@@ -26,7 +26,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{% for order in user.orders %}
+								{% for order in orders %}
 									<tr>
 										<td>{{ order.number }}</td>
 										<td>{{ order.createdAt|format_datetime('short', 'short') }}</td>
@@ -56,7 +56,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{% for payment in user.payments %}
+								{% for payment in payments %}
 									<tr>
 										<td>Commande:
 											{{ payment.orderRef.number }}</td>
@@ -66,7 +66,7 @@
 										<td>
 											<div class="d-flex flex-wrap gap-2">
 												{% if payment.status != 'paid' and payment.orderRef.status != 'cancelled' %}
-													<a href="#" class="btn btn-primary">Payer</a>
+													<a href="{{ path('app.user.orders.paid', {id: payment.id}) }}" class="btn btn-primary">Payer</a>
 												{% endif %}
 											</div>
 										</td>

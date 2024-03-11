@@ -3,14 +3,19 @@
 namespace App\Controller\Frontend;
 
 use App\Entity\Address;
+use App\Entity\Payment;
+use App\Factory\StripeFactory;
 use App\Form\AddressType;
 use App\Form\UserType;
+use App\Repository\OrderRepository;
+use App\Repository\PaymentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/compte', name: 'app.user')]
 class UserController extends AbstractController
@@ -49,9 +54,47 @@ class UserController extends AbstractController
     }
 
     #[Route('/commandes', '.orders', methods: ['GET'])]
-    public function order(): Response
+    public function order(OrderRepository $orderRepository, PaymentRepository $paymentRepository): Response
     {
-        return $this->render('Frontend/User/orders.html.twig');
+        return $this->render('Frontend/User/orders.html.twig', [
+            'orders' => $orderRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'DESC']),
+            'payments' => $paymentRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'DESC']),
+        ]);
+    }
+
+    #[Route('/commandes/{id}/paiement', '.orders.paid', methods: ['GET'])]
+    public function payOrder(?Payment $payment, StripeFactory $stripeFactory): RedirectResponse
+    {
+        if (!$payment || $payment->getUser() !== $this->getUser()) {
+            $this->addFlash('error', 'Paiement introuvable');
+
+            return $this->redirectToRoute('app.user.orders');
+        }
+
+        $order = $payment->getOrderRef();
+        $payment->setStatus(Payment::STATUS_CANCELED);
+
+        $this->em->persist($payment);
+
+        $newPayment = (new Payment())
+            ->setUser($this->getUser())
+            ->setOrderRef($order)
+            ->setStatus(Payment::STATUS_NEW);
+
+        $this->em->persist($newPayment);
+        $this->em->flush();
+
+        $session = $stripeFactory->createPayment(
+            $newPayment,
+            $this->generateUrl('app.checkout.success', [
+                'id' => $newPayment->getId(),
+            ], UrlGeneratorInterface::ABSOLUTE_URL),
+            $this->generateUrl('app.checkout.cancel', [
+                'id' => $newPayment->getId(),
+            ], UrlGeneratorInterface::ABSOLUTE_URL)
+        );
+
+        return $this->redirect($session->url);
     }
 
     #[Route('/adresses', '.address', methods: ['GET'])]

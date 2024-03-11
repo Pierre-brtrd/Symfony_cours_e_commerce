@@ -147,6 +147,15 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('app.home');
         }
 
+        $payment->setStatus(Payment::STATUS_REFUSED);
+
+        $order = $payment->getOrderRef();
+        $order->setStatus(Order::STATUS_PAYMENT_FAILED);
+
+        $this->em->persist($payment);
+        $this->em->persist($order);
+        $this->em->flush();
+
         return $this->render('Frontend/Checkout/cancel.html.twig', [
             'payment' => $payment,
         ]);

@@ -22,7 +22,7 @@ class Order
     public const STATUS_PAID = 'paid';
     public const STATUS_PAYMENT_FAILED = 'payment_failed';
     public const STATUS_SHIPPED = 'shipped';
-    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_CANCELLED = 'canceled';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
