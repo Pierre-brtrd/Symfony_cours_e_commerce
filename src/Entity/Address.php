@@ -87,6 +87,10 @@ class Address
 
     public function setUser(?User $user): static
     {
+        if (count($user->getAddresses()) === 0) {
+            $user->setDefaultAddress($this);
+        }
+
         $this->user = $user;
 
         return $this;

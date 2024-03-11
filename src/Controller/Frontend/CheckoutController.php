@@ -46,9 +46,11 @@ class CheckoutController extends AbstractController
         }
 
         /** @var User $user */
-        $address = $user->getAddresses()->first();
-
-        if (!$address) {
+        if ($user->getDefaultAddress()) {
+            $address = $user->getDefaultAddress();
+        } else if ($user->getAddresses()->count() > 0) {
+            $address = $user->getAddresses()->first();
+        } else {
             $address = new Address();
             $address->setUser($user);
         }

@@ -130,4 +130,25 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('app.user.address');
     }
+
+    #[Route('/adresses/{id}/defaut', '.address.default', methods: ['GET'])]
+    public function defaultAddress(?Address $address): RedirectResponse
+    {
+        if (!$address || $address->getUser() !== $this->getUser()) {
+            $this->addFlash('error', 'Adresse introuvable');
+
+            return $this->redirectToRoute('app.user.address');
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $user->setDefaultAddress($address);
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $this->addFlash('success', 'Adresse par défaut modifiée avec succès');
+
+        return $this->redirectToRoute('app.user.address');
+    }
 }

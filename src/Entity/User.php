@@ -65,6 +65,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $payments;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Address $defaultAddress = null;
+
     public function __construct()
     {
         $this->enable = $this->enable ?? false;
@@ -273,6 +276,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $payment->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDefaultAddress(): ?Address
+    {
+        return $this->defaultAddress;
+    }
+
+    public function setDefaultAddress(?Address $defaultAddress): static
+    {
+        $this->defaultAddress = $defaultAddress;
 
         return $this;
     }

@@ -14,7 +14,7 @@
 		<div class="row gy-2">
 			{% for address in user.addresses %}
 				<div class="col-md-6">
-					<div class="card">
+					<div class="card {{ address == user.defaultAddress ? 'border-secondary' }}">
 						<div class="card-body">
 							<address>
 								<strong>{{ address.user.fullName }}</strong>
@@ -25,11 +25,16 @@
 								{{ address.zipCode }}
 							</address>
 							<div class="d-flex flex-wrap gap-2">
+								<a href="{{ address == user.defaultAddress ? '#' : path('app.user.address.default', {id: address.id}) }}" class="btn btn-{{ address == user.defaultAddress ? 'outline-primary disabled' : 'primary' }}">{{ address == user.defaultAddress ? 'Adresse par défaut' : 'Définir comme par défaut' }}</a>
 								<a href="{{ path('app.user.address.edit', {'id': address.id}) }}" class="btn btn-primary">Modifier</a>
 								{{ common.deleteForm(path('app.user.address.delete', {id: address.id}), address.id) }}
 							</div>
 						</div>
 					</div>
+				</div>
+			{% else %}
+				<div class="alert alert-info">
+					Vous n'avez pas encore enregistré d'adresse
 				</div>
 			{% endfor %}
 		</div>
