@@ -18,20 +18,7 @@
 						{% if is_granted('ROLE_ADMIN') %}
 							<li class="navbar-item me-2">
 								<div class="dropdown">
-									<button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										Admin
-									</button>
-									<div class="dropdown-menu" aria-labelledby="triggerId">
-										<a class="dropdown-item" href="{{ path('admin.orders.index') }}">Commandes</a>
-										<div class="dropdown-divider"></div>
-										<a class="dropdown-item" href="{{ path('admin.users.index') }}">Users</a>
-										<div class="dropdown-divider"></div>
-										<a class="dropdown-item" href="{{ path('admin.products.index') }}">Produits</a>
-										<div class="dropdown-divider"></div>
-										<a class="dropdown-item" href="{{ path('admin.taxes.index') }}">Taxes</a>
-										<div class="dropdown-divider"></div>
-										<a class="dropdown-item" href="{{ path('admin.categories.index') }}">Catégories</a>
-									</div>
+									<a class="btn btn-secondary" href="{{ path('admin.dashboard') }}">Admin</a>
 								</div>
 							</li>
 						{% endif %}

@@ -1,0 +1,85 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Dashboard Admin
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Dashboard Admin</h1>
+		<div class="row mt-4 align-items-center justify-content-center">
+			<div class="col-md-3">
+				<div class="card shadow-lg">
+					<div class="card-body text-center">
+						<h2 class="cart-title">{{ numberUsers }}</h2>
+						<h3>{{ numberUsers > 1 ? 'Clients' : 'Client' }}</h3>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="card shadow-lg h-100">
+					<div class="card-body text-center">
+						<h2 class="cart-title">{{ caThisMonth|format_currency('EUR') }}</h2>
+						<h3>Ce mois-ci</h3>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="card shadow-lg h-100">
+					<div class="card-body text-center">
+						<h2 class="cart-title">{{ caThisYear|format_currency('EUR') }}</h2>
+						<h3>Cette année</h3>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="card shadow-lg h-100">
+					<div class="card-body text-center">
+						<h2 class="cart-title">{{ averageCart|format_currency('EUR') }}</h2>
+						<h3>Panier moyen</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-4">
+			<div class="col-md-7">
+				<div class="card">
+					<div class="card-body">
+						{{ render_chart(chartCA) }}
+					</div>
+				</div>
+			</div>
+			<div class="col-md-5">
+				<div class="card">
+					<div class="card-body">
+						{{ render_chart(chartProducts) }}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-4">
+			<div class="col-md-4">
+				<div class="card">
+					<div class="card-body">
+						<a href="{{ path('admin.orders.index') }}" class="btn btn-primary w-100">Commandes</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="card">
+					<div class="card-body">
+						<a href="{{ path('admin.users.index') }}" class="btn btn-primary w-100">Clients</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="card">
+					<div class="card-body">
+						<a href="{{ path('admin.products.index') }}" class="btn btn-primary w-100">Produits</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>{% endblock %}

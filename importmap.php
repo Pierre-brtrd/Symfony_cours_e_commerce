@@ -28,4 +28,7 @@ return [
     'tom-select' => [
         'version' => '2.3.1',
     ],
+    'chart.js/auto' => [
+        'version' => '3.9.1',
+    ],
 ];

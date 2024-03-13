@@ -145,6 +145,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-define-polyfill-provider@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "@babel/helper-define-polyfill-provider@npm:0.6.0"
+  dependencies:
+    "@babel/helper-compilation-targets": "npm:^7.22.6"
+    "@babel/helper-plugin-utils": "npm:^7.22.5"
+    debug: "npm:^4.1.1"
+    lodash.debounce: "npm:^4.0.8"
+    resolve: "npm:^1.14.2"
+  peerDependencies:
+    "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
+  checksum: 89853669dcd661d6d33f6fad7c3aece25b9988d913e3d379fdaec92da5495598f4dda9302fc2c87a3a287066944282cab85664daa789a9d6ec21a4647875ed03
+  languageName: node
+  linkType: hard
+
 "@babel/helper-environment-visitor@npm:^7.22.20":
   version: 7.22.20
   resolution: "@babel/helper-environment-visitor@npm:7.22.20"
@@ -1520,6 +1535,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@symfony/ux-chartjs@file:vendor/symfony/ux-chartjs/assets::locator=root-workspace-0b6124%40workspace%3A.":
+  version: 1.1.0
+  resolution: "@symfony/ux-chartjs@file:vendor/symfony/ux-chartjs/assets#vendor/symfony/ux-chartjs/assets::hash=d1805b&locator=root-workspace-0b6124%40workspace%3A."
+  peerDependencies:
+    "@hotwired/stimulus": ^3.0.0
+    chart.js: ^3.4.1 || ^4.0
+  checksum: fcc5148ecabb61bfd648f4b3b17df998473cfab6fc8f002d2e99d5ba10a527854fa8cb6cbb9794c3e2d85ef8cb0287d3d0fd5452ed2f0c01b44d5cfe9fcd656a
+  languageName: node
+  linkType: hard
+
 "@symfony/ux-turbo@file:vendor/symfony/ux-turbo/assets::locator=root-workspace-0b6124%40workspace%3A.":
   version: 0.1.0
   resolution: "@symfony/ux-turbo@file:vendor/symfony/ux-turbo/assets#vendor/symfony/ux-turbo/assets::hash=242a8f&locator=root-workspace-0b6124%40workspace%3A."
@@ -2368,15 +2393,15 @@ __metadata:
   linkType: hard
 
 "babel-plugin-polyfill-corejs2@npm:^0.4.8":
-  version: 0.4.8
-  resolution: "babel-plugin-polyfill-corejs2@npm:0.4.8"
+  version: 0.4.9
+  resolution: "babel-plugin-polyfill-corejs2@npm:0.4.9"
   dependencies:
     "@babel/compat-data": "npm:^7.22.6"
-    "@babel/helper-define-polyfill-provider": "npm:^0.5.0"
+    "@babel/helper-define-polyfill-provider": "npm:^0.6.0"
     semver: "npm:^6.3.1"
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
-  checksum: fc8f31fc217909b5f7700e0498cea631e58f299aa7c674b61de20e81c3e4b84d1ab085d2f3ebd93650af15bc1a4d9b19be94d595539b66ac25cbd8604e2d4909
+  checksum: 688f8f0ddbe165506ebb902c75e1668d4301ee833c437134ffa61c27e356e987eb89bc783f5aa2a04ceacd90b8567664e8db0e1954caa7d1ceb4f68417a70dac
   languageName: node
   linkType: hard
 
@@ -2609,9 +2634,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001587":
-  version: 1.0.30001594
-  resolution: "caniuse-lite@npm:1.0.30001594"
-  checksum: 2969deadab2f68019c0ab6d4a7e0579eb6a4588e90320690db31ca6a833ae308e6eb8d2520d9331849ee22e2a2712dabf18b02af5437b4aa1fc31df676d97685
+  version: 1.0.30001597
+  resolution: "caniuse-lite@npm:1.0.30001597"
+  checksum: 14f15c67f755faebe6b2952ba00b3ba7399b7e6ed7f006294ecbf496454ba44148451d8f3cfc472fbcad719c833b44ac657492342b74328ce548ac206c38b2d7
   languageName: node
   linkType: hard
 
@@ -2633,6 +2658,17 @@ __metadata:
     ansi-styles: "npm:^4.1.0"
     supports-color: "npm:^7.1.0"
   checksum: cb96ab47eb1b55525e72caac9eed1513bff28e686df7eee6b04379c80922df21c8283d9938af16a645826c94c9e19fb52ad63cbead6b5073d08ae5f8fa2661a2
+  languageName: node
+  linkType: hard
+
+"chartjs-plugin-zoom@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "chartjs-plugin-zoom@npm:2.0.1"
+  dependencies:
+    hammerjs: "npm:^2.0.8"
+  peerDependencies:
+    chart.js: ">=3.2.0"
+  checksum: ebcf9ac25a0703aae1216bfd931532846fb2a6ad186bfbbd44c59c38b05b85cbe6933c1bdbf4eb31f02fb33e6f0b146eb3f237d046b111c08c7d34c7102bc72e
   languageName: node
   linkType: hard
 
@@ -3119,7 +3155,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"define-data-property@npm:^1.1.2":
+"define-data-property@npm:^1.1.4":
   version: 1.1.4
   resolution: "define-data-property@npm:1.1.4"
   dependencies:
@@ -3282,9 +3318,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.668":
-  version: 1.4.693
-  resolution: "electron-to-chromium@npm:1.4.693"
-  checksum: b694bb3b60174f641b3a35f0a7e05b0fdda5e88e8cd9e37b9b0e82abe39772387357af431257439123df3f33dede887fef9181fd51a835198b81258d130487b8
+  version: 1.4.700
+  resolution: "electron-to-chromium@npm:1.4.700"
+  checksum: 07acc66f21076557f14131376f37991fd69fd1298ebd394efadeb52c6c911da27fbfa1aa2e7c683fe1e0acee1d031bf328506f57a475c5b94033173e08144b2e
   languageName: node
   linkType: hard
 
@@ -3326,12 +3362,12 @@ __metadata:
   linkType: hard
 
 "enhanced-resolve@npm:^5.15.0":
-  version: 5.15.1
-  resolution: "enhanced-resolve@npm:5.15.1"
+  version: 5.16.0
+  resolution: "enhanced-resolve@npm:5.16.0"
   dependencies:
     graceful-fs: "npm:^4.2.4"
     tapable: "npm:^2.2.0"
-  checksum: 69d37285702c970a762e69b4e2bc65cd367a6a3cdbb4d3eba253094ccbb84411a29c26c9bd533f3fbff8357b4d8b4cafe8c103e9ec1d098ce530653db43685cd
+  checksum: 63b8a84e416d2e339f6b19356750aa2f7dd7d5f6e19e0249498c4da95e182f5ad30f14ce569459fc0134fb2a16774262ad9e5719f35b17d8e24070887de2cb38
   languageName: node
   linkType: hard
 
@@ -3766,7 +3802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-intrinsic@npm:^1.1.3, get-intrinsic@npm:^1.2.3, get-intrinsic@npm:^1.2.4":
+"get-intrinsic@npm:^1.1.3, get-intrinsic@npm:^1.2.4":
   version: 1.2.4
   resolution: "get-intrinsic@npm:1.2.4"
   dependencies:
@@ -3881,6 +3917,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hammerjs@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "hammerjs@npm:2.0.8"
+  checksum: 3778ddf838e8683e55300ebc8065cba5fffa2d023079b8d813e826657ec3e0f0c38d9b06e8597c9e5aa3baa2113659c83b7b66d61431dc0707f264a86d0db30b
+  languageName: node
+  linkType: hard
+
 "handle-thing@npm:^2.0.0":
   version: 2.0.1
   resolution: "handle-thing@npm:2.0.1"
@@ -3902,7 +3945,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"has-property-descriptors@npm:^1.0.1":
+"has-property-descriptors@npm:^1.0.2":
   version: 1.0.2
   resolution: "has-property-descriptors@npm:1.0.2"
   dependencies:
@@ -3926,11 +3969,11 @@ __metadata:
   linkType: hard
 
 "hasown@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "hasown@npm:2.0.1"
+  version: 2.0.2
+  resolution: "hasown@npm:2.0.2"
   dependencies:
     function-bind: "npm:^1.1.2"
-  checksum: 1087d7053b4b6c6ecb9d84ba49d1f9686b52cea93e0cb00282e398fe0b092af750f445a9edd774d6604f005ef1dfe22253a25feded5463b490bd0eace170ffb9
+  checksum: 385a1939a16d3df36860cd9e9326910c187e0fe97a8f28d7a87ee0ef0af4756bd8bd42060c8ac87eb55f0c0d8fa78bf49d81471ee05abd7923314c78491a571a
   languageName: node
   linkType: hard
 
@@ -5950,11 +5993,13 @@ __metadata:
     "@popperjs/core": "npm:^2.11.8"
     "@symfony/stimulus-bridge": "npm:^3.2.2"
     "@symfony/ux-autocomplete": "file:vendor/symfony/ux-autocomplete/assets"
+    "@symfony/ux-chartjs": "file:vendor/symfony/ux-chartjs/assets"
     "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/assets"
     "@symfony/webpack-encore": "npm:^4.0.0"
     bootstrap: "npm:^5.3.3"
     bootstrap-icons: "npm:^1.11.3"
     bootstrap-table: "npm:^1.22.3"
+    chartjs-plugin-zoom: "npm:^2.0.1"
     core-js: "npm:^3.23.0"
     jquery: "npm:^3.7.1"
     regenerator-runtime: "npm:^0.13.9"
@@ -6144,16 +6189,16 @@ __metadata:
   linkType: hard
 
 "set-function-length@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "set-function-length@npm:1.2.1"
+  version: 1.2.2
+  resolution: "set-function-length@npm:1.2.2"
   dependencies:
-    define-data-property: "npm:^1.1.2"
+    define-data-property: "npm:^1.1.4"
     es-errors: "npm:^1.3.0"
     function-bind: "npm:^1.1.2"
-    get-intrinsic: "npm:^1.2.3"
+    get-intrinsic: "npm:^1.2.4"
     gopd: "npm:^1.0.1"
-    has-property-descriptors: "npm:^1.0.1"
-  checksum: ea6231b702f1e25d5b81d7bb23ad06de67a9f771ed287e1584eb01c8a7688ba5ebc72bd3dd4f974ff6750075b2883bd093021ce0cfb0933010b60bbdef675456
+    has-property-descriptors: "npm:^1.0.2"
+  checksum: 9de5b50ca7cd6649389081b24689db7058a4700a8d9ecb377de694eb557ec55f4c7a47afaaf022ba1bd5e570ceb63494af710e2c86791d8ef8cc05e4b56bc65b
   languageName: node
   linkType: hard
 

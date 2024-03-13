@@ -58,6 +58,109 @@ class OrderRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getCaThisMonth(): float
+    {
+        $ca = $this->createQueryBuilder('o')
+            ->select('(SUM(p.priceHT) * (1 + t.rate)) * item.quantity as ca')
+            ->andWhere('o.status = :status')
+            ->andWhere('o.createdAt > :date')
+            ->join('o.items', 'item')
+            ->join('item.product', 'p')
+            ->join('p.taxe', 't')
+            ->setParameter('status', Order::STATUS_PAID)
+            ->setParameter('date', new \DateTime('first day of this month'))
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $ca['ca'] ?? 0;
+    }
+
+    public function getCaThisYear(): float
+    {
+        $ca = $this->createQueryBuilder('o')
+            ->select('(SUM(p.priceHT) * (1 + t.rate)) * item.quantity as ca')
+            ->andWhere('o.status = :status')
+            ->andWhere('o.createdAt > :date')
+            ->join('o.items', 'item')
+            ->join('item.product', 'p')
+            ->join('p.taxe', 't')
+            ->setParameter('status', Order::STATUS_PAID)
+            ->setParameter('date', new \DateTime('first day of this year'))
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $ca['ca'] ?? 0;
+    }
+
+    public function getCAByMonth(\DateTime $start): float
+    {
+        $start = $start->modify('first day of this month');
+        $end = (new \DateTime($start->format('Y-m-d')))->modify('last day of this month');
+
+        $query = $this->createQueryBuilder('o')
+            ->select('(SUM(p.priceHT) * (1 + t.rate)) * item.quantity as ca')
+            ->andWhere('o.status = :status')
+            ->andWhere('o.createdAt BETWEEN :start AND :end')
+            ->join('o.items', 'item')
+            ->join('item.product', 'p')
+            ->join('p.taxe', 't')
+            ->setParameter('status', Order::STATUS_PAID)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+
+        $amount = 0;
+
+        foreach ($query as $invoiceAmount) {
+            $amount += $invoiceAmount['ca'];
+        }
+
+        return $amount;
+    }
+
+    public function getNbOrderThisYear(): int
+    {
+        $nbOrder = $this->createQueryBuilder('o')
+            ->select('COUNT(o.id) as nbOrder')
+            ->andWhere('o.status = :status')
+            ->andWhere('o.createdAt > :date')
+            ->setParameter('status', Order::STATUS_PAID)
+            ->setParameter('date', new \DateTime('first day of this year'))
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $nbOrder['nbOrder'] ?? 0;
+    }
+
+    public function getAverageCart(): float
+    {
+        return $this->getCaThisYear() / $this->getNbOrderThisYear();
+    }
+
+    public function findAmountTTCByProduct(int $max): array
+    {
+        $query = $this->createQueryBuilder('o')
+            ->select('p.title as name, SUM(p.priceHT * (1 + t.rate) * item.quantity) as amountTTC')
+            ->join('o.items', 'item')
+            ->join('item.product', 'p')
+            ->join('p.taxe', 't')
+            ->andWhere('o.status = :status')
+            ->setParameter('status', Order::STATUS_PAID)
+            ->groupBy('p.id')
+            ->orderBy('amountTTC', 'DESC')
+            ->setMaxResults($max)
+            ->getQuery()
+            ->getResult();
+
+        return array_map(function (array $product): array {
+            return [
+                'label' => $product['name'],
+                'data' => $product['amountTTC'],
+            ];
+        }, $query);
+    }
+
     //    /**
     //     * @return Order[] Returns an array of Order objects
     //     */
