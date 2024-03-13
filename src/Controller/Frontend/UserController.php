@@ -3,6 +3,7 @@
 namespace App\Controller\Frontend;
 
 use App\Entity\Address;
+use App\Entity\Order;
 use App\Entity\Payment;
 use App\Factory\StripeFactory;
 use App\Form\AddressType;
@@ -59,6 +60,20 @@ class UserController extends AbstractController
         return $this->render('Frontend/User/orders.html.twig', [
             'orders' => $orderRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'DESC']),
             'payments' => $paymentRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'DESC']),
+        ]);
+    }
+
+    #[Route('/commandes/{id}', '.orders.show', methods: ['GET'])]
+    public function show(?Order $order): Response
+    {
+        if (!$order || $order->getUser() !== $this->getUser()) {
+            $this->addFlash('error', 'Commande introuvable');
+
+            return $this->redirectToRoute('app.user.orders');
+        }
+
+        return $this->render('Frontend/User/show.html.twig', [
+            'order' => $order,
         ]);
     }
 

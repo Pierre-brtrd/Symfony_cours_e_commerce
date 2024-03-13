@@ -2,7 +2,6 @@
 
 namespace App\Factory;
 
-use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Entity\Payment;
 use App\Event\StripeEvent;
@@ -12,6 +11,7 @@ use Stripe\Stripe;
 use Stripe\Webhook;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 use Webmozart\Assert\Assert;
 
 class StripeFactory
@@ -19,7 +19,7 @@ class StripeFactory
     public function __construct(
         private string $stripeSecretKey,
         private string $webhook,
-        private EventDispatcherInterface $eventDispatcher
+        private EventDispatcherInterface $eventDispatcher,
     ) {
         Stripe::setApiKey($this->stripeSecretKey);
         Stripe::setApiVersion('2020-08-27');
@@ -42,6 +42,9 @@ class StripeFactory
                     'product_data' => [
                         'name' => $order->getQuantity() . ' x - ' . $order->getProduct()->getTitle(),
                         'description' => $order->getProduct()->getshortDescription(),
+                        'images' => [
+                            'https://picsum.photos/300/200'
+                        ],
                     ],
                     'unit_amount' => bcmul($order->getProduct()->getPriceTTC(), 100),
                     'tax_behavior' => 'inclusive',

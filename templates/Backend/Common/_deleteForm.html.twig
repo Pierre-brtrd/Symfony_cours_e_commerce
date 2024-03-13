@@ -16,7 +16,7 @@
 		<span class="badge bg-success">Payée</span>
 	{% elseif status == "checkout_completed" %}
 		<span class="badge bg-info">Checkout finalisé</span>
-	{% elseif status == "payment_failed" %}
+	{% elseif status == "payment_failed" or status == 'refused' %}
 		<span class="badge bg-danger">Refusé</span>
 	{% elseif status == "canceled" %}
 		<span class="badge bg-warning">Annulée</span>

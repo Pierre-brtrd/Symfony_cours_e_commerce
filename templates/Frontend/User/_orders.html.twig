@@ -34,7 +34,7 @@
 										<td>{{ common.status(order.status) }}</td>
 										<td>
 											<div class="d-flex flex-wrap gap-2">
-												<a href="#" class="btn btn-primary">Détails</a>
+												<a href="{{ path('app.user.orders.show', {id: order.id}) }}" class="btn btn-primary">Détails</a>
 											</div>
 										</td>
 									</tr>

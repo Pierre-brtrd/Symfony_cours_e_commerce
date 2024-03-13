@@ -1,0 +1,30 @@
+{% extends 'Frontend/User/baseAccount.html.twig' %}
+
+{% block title %}
+	Votre commande
+	{{ order.number }}
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}
+	<div class="col-12 col-md-8 col-lg-9">
+		<p class="text-muted mb-2">Voir votre commande
+			{{ order.number }}</p>
+		<div class="card border-1 shadow-lg">
+			<div class="card-body">
+				<div class="row mt-4">
+					<div class="col-md-7">
+						{% include 'Frontend/Cart/_listItems.html.twig' with { cart: order } %}
+					</div>
+					<div class="col-md-5">
+						{% include 'Frontend/Cart/_cartTotals.html.twig' with { isInCart: 'none', cart: order } %}
+						{% include 'Backend/Orders/Show/_infoPayments.html.twig' %}
+						{% if  order.payments.last.status != 'paid' and (order.status != 'cancelled' or order.status != 'payment_failed') %}
+							<a href="{{ path('app.user.orders.paid', {id: order.payments.last.id}) }}" class="btn btn-primary mt-4 w-100">Payer</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
