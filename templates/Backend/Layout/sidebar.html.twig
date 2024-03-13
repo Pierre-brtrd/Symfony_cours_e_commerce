@@ -26,5 +26,8 @@
 		<li class="sidebar-item">
 			<a class="dropdown-item {{ app.request.get('_route') == 'admin.users.index' ? 'active' }}" href="{{ path('admin.users.index') }}">Users</a>
 		</li>
+		<li class="sidebar-item mt-5">
+			<a href="{{ path('app.home') }}">Voir le site</a>
+		</li>
 	</ul>
 </header>
