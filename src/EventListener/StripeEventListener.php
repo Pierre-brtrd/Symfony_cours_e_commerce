@@ -17,10 +17,10 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 class StripeEventListener
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        private PaymentRepository $paymentRepository,
-        private OrderRepository $orderRepository,
-        private LoggerInterface $logger,
+        private readonly EntityManagerInterface $em,
+        private readonly PaymentRepository $paymentRepository,
+        private readonly OrderRepository $orderRepository,
+        private readonly LoggerInterface $logger,
     ) {
     }
 

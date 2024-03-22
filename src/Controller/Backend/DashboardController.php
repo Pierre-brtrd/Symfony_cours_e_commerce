@@ -13,8 +13,8 @@ use Symfony\UX\Chartjs\Model\Chart;
 class DashboardController extends AbstractController
 {
     public function __construct(
-        private ChartBuilderInterface $chartBuilder,
-        private OrderRepository $orderRepository
+        private readonly ChartBuilderInterface $chartBuilder,
+        private readonly OrderRepository $orderRepository
     ) {
     }
 

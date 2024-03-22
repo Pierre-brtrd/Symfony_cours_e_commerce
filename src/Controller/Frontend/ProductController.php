@@ -12,13 +12,12 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Role\Role;
 
 #[Route('/products', 'app.products')]
 class ProductController extends AbstractController
 {
     public function __construct(
-        private ProductRepository $productRepo,
+        private readonly ProductRepository $productRepo,
     ) {
     }
 

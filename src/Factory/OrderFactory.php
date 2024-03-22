@@ -6,7 +6,6 @@ use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Entity\Product;
 use Symfony\Bundle\SecurityBundle\Security;
-use Webmozart\Assert\Assert;
 
 /**
  * Class OrderFactory
@@ -15,7 +14,7 @@ use Webmozart\Assert\Assert;
 class OrderFactory
 {
     public function __construct(
-        private Security $security
+        private readonly Security $security
     ) {
     }
 
@@ -45,8 +44,6 @@ class OrderFactory
      */
     public function createItem(Product $product): OrderItem
     {
-        Assert::isInstanceOf($product, Product::class, sprintf('The product must be an instance of %s', Product::class));
-
         return (new OrderItem())
             ->setProduct($product)
             ->setQuantity(1);

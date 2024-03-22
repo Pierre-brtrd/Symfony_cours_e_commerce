@@ -17,11 +17,11 @@ use Symfony\Bundle\SecurityBundle\Security;
 class CartManager
 {
     public function __construct(
-        private CartSessionStorage $cartStorage,
-        private OrderFactory $orderFactory,
-        private EntityManagerInterface $em,
-        private Security $security,
-        private OrderRepository $orderRepo,
+        private readonly CartSessionStorage $cartStorage,
+        private readonly OrderFactory $orderFactory,
+        private readonly EntityManagerInterface $em,
+        private readonly Security $security,
+        private readonly OrderRepository $orderRepo,
     ) {
     }
 

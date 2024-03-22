@@ -16,8 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 class UserController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        private UserRepository $userRepo
+        private readonly EntityManagerInterface $em,
+        private readonly UserRepository $userRepo
     ) {
     }
 

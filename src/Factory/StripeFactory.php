@@ -11,15 +11,14 @@ use Stripe\Stripe;
 use Stripe\Webhook;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 use Webmozart\Assert\Assert;
 
 class StripeFactory
 {
     public function __construct(
-        private string $stripeSecretKey,
-        private string $webhook,
-        private EventDispatcherInterface $eventDispatcher,
+        private readonly string $stripeSecretKey,
+        private readonly string $webhook,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
         Stripe::setApiKey($this->stripeSecretKey);
         Stripe::setApiVersion('2020-08-27');

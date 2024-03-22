@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Factory\StripeFactory;
 use App\Form\AddressType;
 use App\Form\PaymentType;
+use App\Manager\CartManager;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,8 +23,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class CheckoutController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        private OrderRepository $orderRepository
+        private readonly EntityManagerInterface $em,
+        private readonly OrderRepository $orderRepository,
+        private readonly CartManager $cartManager
     ) {
     }
 
@@ -31,7 +33,6 @@ class CheckoutController extends AbstractController
     public function address(Request $request): Response|RedirectResponse
     {
         $user = $this->getUser();
-        $order = $this->orderRepository->findLastCartUser($user);
 
         if (!$user) {
             $this->addFlash('error', 'Vous devez être connecté pour passer commande');
@@ -39,7 +40,9 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('app.login');
         }
 
-        if (!$order) {
+        $order = $this->cartManager->getCurrentCart();
+
+        if (!$order || count($order->getItems()) < 1) {
             $this->addFlash('error', 'Votre panier est vide');
 
             return $this->redirectToRoute('app.cart');
@@ -79,7 +82,6 @@ class CheckoutController extends AbstractController
     public function recap(Request $request, StripeFactory $stripeFactory): Response|RedirectResponse
     {
         $user = $this->getUser();
-        $order = $this->orderRepository->findLastCartUser($user);
 
         if (!$user) {
             $this->addFlash('error', 'Vous devez être connecté pour passer commande');
@@ -87,7 +89,9 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('app.login');
         }
 
-        if (!$order) {
+        $order = $this->cartManager->getCurrentCart();
+
+        if (!$order || count($order->getItems()) < 1) {
             $this->addFlash('error', 'Votre panier est vide');
 
             return $this->redirectToRoute('app.cart');

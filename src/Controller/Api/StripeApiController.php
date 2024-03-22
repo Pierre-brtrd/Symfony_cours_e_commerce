@@ -17,10 +17,10 @@ use Symfony\Component\Routing\Attribute\Route;
 class StripeApiController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        private PaymentRepository $paymentRepository,
-        private OrderRepository $orderRepository,
-        private EventDispatcherInterface $dispatcher
+        private readonly EntityManagerInterface $em,
+        private readonly PaymentRepository $paymentRepository,
+        private readonly OrderRepository $orderRepository,
+        private readonly EventDispatcherInterface $dispatcher
     ) {
     }
 

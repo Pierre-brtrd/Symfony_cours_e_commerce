@@ -6,11 +6,10 @@ use Stripe\ApiResource;
 use Stripe\Event;
 use Symfony\Contracts\EventDispatcher\Event as BaseEvent;
 
-
 class StripeEvent extends BaseEvent
 {
     public function __construct(
-        private Event $event
+        private readonly Event $event
     ) {
     }
 

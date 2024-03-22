@@ -20,8 +20,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class RemoveExpiredCartsCommand extends Command
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        private OrderRepository $orderRepo,
+        private readonly EntityManagerInterface $em,
+        private readonly OrderRepository $orderRepo,
     ) {
         parent::__construct();
     }

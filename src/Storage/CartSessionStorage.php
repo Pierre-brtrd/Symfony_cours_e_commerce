@@ -16,8 +16,8 @@ class CartSessionStorage
     public const CART_KEY_NAME = 'cart_id';
 
     public function __construct(
-        private RequestStack $requestStack,
-        private OrderRepository $cartRepository,
+        private readonly RequestStack $requestStack,
+        private readonly OrderRepository $cartRepository,
     ) {
     }
 
