@@ -5,6 +5,10 @@
 	{{ parent() }}
 {% endblock %}
 
+{% block meta %}
+	<meta name="turbo-visit-control" content="reload">
+{% endblock %}
+
 {% block body %}
 	{% import 'Backend/Common/_deleteForm.html.twig' as common %}
 	<section class="container mt-2">

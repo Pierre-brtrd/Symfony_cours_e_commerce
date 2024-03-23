@@ -19,7 +19,7 @@
 					<div class="col-md-5">
 						{% include 'Frontend/Cart/_cartTotals.html.twig' with { isInCart: 'none', cart: order } %}
 						{% include 'Backend/Orders/Show/_infoPayments.html.twig' %}
-						{% if  order.payments.last.status != 'paid' and (order.status != 'cancelled' or order.status != 'payment_failed') %}
+						{% if  order.payments.last.status != 'paid' and (order.status != 'canceled') %}
 							<a href="{{ path('app.user.orders.paid', {id: order.payments.last.id}) }}" class="btn btn-primary mt-4 w-100">Payer</a>
 						{% endif %}
 					</div>

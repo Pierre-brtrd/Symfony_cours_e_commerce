@@ -109,15 +109,11 @@ pre {
   border-radius: $border-radius;
 }
 
-.parent-password {
-  position: relative;
+.turbo-progress-bar {
+  background: #f8c557;
 }
 
-.icon-password {
-  position: absolute;
-  top: 50%;
-  right: 1%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  color: $primary;
+.toggle-password-button {
+  bottom: -1.25rem !important;
+  top: unset;
 }

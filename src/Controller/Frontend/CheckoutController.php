@@ -106,6 +106,7 @@ class CheckoutController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $payment->setStatus(Payment::STATUS_NEW);
             $this->em->persist($payment);
             $this->em->flush();
 

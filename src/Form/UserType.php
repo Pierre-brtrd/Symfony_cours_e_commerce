@@ -50,6 +50,9 @@ class UserType extends AbstractType
                     'attr' => [
                         'placeholder' => "S3CR3T",
                     ],
+                    'toggle' => true,
+                    'hidden_label' => '',
+                    'visible_label' => '',
                     'constraints' => [
                         new Assert\NotBlank(),
                         new Assert\Length([
@@ -64,8 +67,12 @@ class UserType extends AbstractType
                 ],
                 'second_options' => [
                     'label' => "Confirmation mot de passe:",
+                    'toggle' => true,
+                    'hidden_label' => '',
+                    'visible_label' => '',
                     'attr' => [
                         'placeholder' => "S3CR3T",
+                        'class' => 'mb-3',
                     ],
                 ]
             ]);

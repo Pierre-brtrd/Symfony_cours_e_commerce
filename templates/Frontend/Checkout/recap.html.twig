@@ -18,7 +18,7 @@
 			</div>
 		</div>
 		<div class="mt-4 text-center">
-			{{ form_start(formStripe) }}
+			{{ form_start(formStripe, {attr: {'data-turbo': 'false'}}) }}
 			{{ form_widget(formStripe) }}
 			<button type="submit" class="btn btn-primary w-50">Payer la commande</a>
 			{{ form_end(formStripe) }}

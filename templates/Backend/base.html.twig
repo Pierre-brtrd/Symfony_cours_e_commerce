@@ -2,7 +2,7 @@
 <html lang="fr">
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> {% block meta %}{% endblock %}
 		<title>
 			{% block title %}
 				| E-commerce Symfo
@@ -20,7 +20,7 @@
 		{% endblock %}
 	</head>
 	<body>
-		<div class="wrapper toggled">
+		<div class="wrapper toggled" {{ stimulus_controller('toogleAdmin') }}>
 			{% include 'Backend/Layout/sidebar.html.twig' %}
 			<main class="page-content-wrapper">
 				{% include 'Layout/flash.html.twig' %}

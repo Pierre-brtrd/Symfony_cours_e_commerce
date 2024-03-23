@@ -3,6 +3,7 @@
 namespace App\Controller\Backend;
 
 use App\Entity\Order;
+use App\Entity\Payment;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,6 +54,11 @@ class OrderController extends AbstractController
 
         if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->request->get('token'))) {
             $order->setStatus(Order::STATUS_CANCELLED);
+
+            foreach ($order->getPayments() as $payment) {
+                $payment->setStatus(Payment::STATUS_CANCELED);
+            }
+
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Order has been canceled.');

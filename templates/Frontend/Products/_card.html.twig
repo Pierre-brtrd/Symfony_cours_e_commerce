@@ -1,6 +1,6 @@
 <div class="col-md-4">
 	<div class="card">
-		<img src="{{ vich_uploader_asset(product) }}" class="card-img-top" alt="{{ product.title }}">
+		<img src="{{ vich_uploader_asset(product)|imagine_filter('product_thumb_list_small') }}" {{ stimulus_controller('symfony/ux-lazy-image/lazy-image', { src: vich_uploader_asset(product)|imagine_filter('product_thumb_list_large') } ) }} class="card-img-top" alt="{{ product.title }}">
 		<div class="card-body">
 			<h2 class="card-text">{{ product.title }}</h2>
 			<p class="card-text">

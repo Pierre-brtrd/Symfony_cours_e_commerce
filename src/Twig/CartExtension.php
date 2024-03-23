@@ -12,7 +12,7 @@ class CartExtension extends AbstractExtension
     ) {
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new \Twig\TwigFunction('getCartNumber', [$this, 'cart']),

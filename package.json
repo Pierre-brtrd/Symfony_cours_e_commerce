@@ -25,6 +25,8 @@
         "@symfony/stimulus-bridge": "^3.2.2",
         "@symfony/ux-autocomplete": "file:vendor/symfony/ux-autocomplete/assets",
         "@symfony/ux-chartjs": "file:vendor/symfony/ux-chartjs/assets",
+        "@symfony/ux-lazy-image": "file:vendor/symfony/ux-lazy-image/assets",
+        "@symfony/ux-toggle-password": "file:vendor/symfony/ux-toggle-password/assets",
         "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/assets",
         "bootstrap": "^5.3.3",
         "bootstrap-icons": "^1.11.3",

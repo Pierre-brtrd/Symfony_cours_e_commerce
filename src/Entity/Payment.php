@@ -34,7 +34,13 @@ class Payment
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Choice(choices: [self::STATUS_NEW, self::STATUS_AWAITING_PAYMENT, self::STATUS_PAID, self::STATUS_CANCELED, self::STATUS_REFUSED])]
+    #[Assert\Choice(choices: [
+        self::STATUS_NEW, 
+        self::STATUS_AWAITING_PAYMENT, 
+        self::STATUS_PAID, 
+        self::STATUS_CANCELED, 
+        self::STATUS_REFUSED
+    ])]
     private ?string $status = null;
 
     public function getId(): ?int
