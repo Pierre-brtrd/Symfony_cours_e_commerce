@@ -25,11 +25,10 @@
 				<label for="password" class="form-label">Password:</label>
 				<input type="password" id="password" name="_password" class="form-control" placeholder="S3CR3T" {{ stimulus_controller('symfony/ux-toggle-password/toggle-password', { visibleLabel: '', hiddenLabel: '', visibleIcon: '<i class="bi bi-eye-fill"></i>', hiddenIcon: '<i class="bi bi-eye-slash-fill"></i>', buttonClasses: ['toggle-password-button'] } ) }}>
 			</div>
-
+			<a href="{{ path('app_forgot_password_request') }}" class="mb-3 btn-link">Mot de passe oublier ?</a>
 			<a href="{{ path('app.register') }}" class="mb-3">Pas encore de compte ?</a>
 
 			<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
 			<button type="submit" class="btn btn-primary">Connexion</button>
 		</form>
 	</section>
