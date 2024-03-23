@@ -3231,9 +3231,15 @@ public function createPayment(Payment $payment, string $successUrl, string $canc
           
         }, $order->getItems()->toArray()),
       	'metadata' => [
-            'order_id' => $order->getId(),
-            'payment_id' => $payment->getId(),
+                'order_id' => $order->getId(),
+                'payment_id' => $payment->getId(),
         ],
+        'payment_intent_data' => [
+            'metadata' => [
+                'order_id' => $order->getId(),
+                'payment_id' => $payment->getId(),
+            ]
+        ]
     ]);
 }
 ```
@@ -3290,9 +3296,15 @@ public function createPayment(Payment $payment, string $successUrl, string $canc
       ],
     ], $order->getItems()->toArray()),
     'metadata' => [
-      'order_id' => $order->getId(),
-      'payment_id' => $payment->getId(),
+        'order_id' => $order->getId(),
+        'payment_id' => $payment->getId(),
     ],
+    'payment_intent_data' => [
+        'metadata' => [
+            'order_id' => $order->getId(),
+            'payment_id' => $payment->getId(),
+        ]
+    ]
   ]);
 }
 ```
@@ -3457,3 +3469,605 @@ Voici une explication claire et simple du fonctionnement d'un webhook dans le ca
 En résumé, un webhook dans le contexte de l'utilisation d'une API permet à votre application de recevoir des notifications en temps réel sur des événements importants qui se produisent sur le serveur de l'API. Cela facilite l'intégration et l'automatisation des processus entre différentes applications et services en ligne.
 
 Vous l'aurez compris, étant donné que nous utilisons une API (Stripe) qui gère les webhook, nous allons nous en servir pour suivre l'état du paiement qui sera envoyé pars tripe sur une URL de notre application qui aura pour but d'effectuer les mises à jour de notre commande et/ou paiement.
+
+### Le Stripe CLI
+
+Pour tester en local, vous devez installer le stripe CLI (commande line interface), sans quoi, stripe ne pourra envoyer des webhook seulement à une URL publique.
+
+> [!NOTE]
+>
+> Pour ceux qui ne ce sont pas créé de compte stripe, vous ne pouvez pas faire cette étape, car vous devrez automatiquement vous connecter à un compte Stripe, mais je ne peux pas vous donner mes accès (question de sécurité)
+
+Pour télécharger le CLI stripe vous pouvez regarder la [documentation de stripe](https://docs.stripe.com/stripe-cli?locale=fr-FR).
+
+Une fois que vous avez téléchargé le CLI stripe et qu'il est fonctionnel en ligne de commande, vous devez vous connecter à votre compte stripe depuis le terminal,  entrez donc la commande:
+
+```shell
+stripe login
+```
+
+Le terminal va ouvrir une page de votre navigateur en vous invitant à vous connecter à votre compte stripe.
+
+ ### La route des webhoooks
+
+Maintenant il va falloir créer une route sur notre application qui sera réservée au communication avec l'API de stripe. Pour faire plus simple, c'est sur cette URL que stripe va envoyer les informations, et nous allons devoir les récupérer et gérer la mise à jour en BDD.
+
+Pour commencer vous allez créer un nouveau dossier **API** dans votre dossier controller, et ensuite créer un **StripeApiController**:
+
+```php
+<?php
+
+namespace App\Controller\Api;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/api/payment/stripe', 'api.payment.stripe')]
+class StripeApiController extends AbstractController
+{
+}
+```
+
+Et maintenant nous allons créer la route qui va nous permettre de recevoir des données depuis stripe:
+
+```php
+<?php
+
+namespace App\Controller\Api;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/api/payment/stripe', 'api.payment.stripe')]
+class StripeApiController extends AbstractController
+{
+  	#[Route('/notify', '.notify', methods: ['POST'])]
+    public function notify(): JsonResponse
+    {
+    }
+}
+
+```
+
+Ici vous voyez que notre méthode va répondre un objet JsonResponse, c'est parce que quand on communique avec une API, on envoie des réponse en format JSON, et c'est ce format qui est attendu par Stripe.
+
+Maintenant, ce que nous devons faire dans un premier temps, c'est du récupérer les informations que Stripe peut nous envoyer, pour ça nous allons récupérer la requête, mais il faut savoir que Stripe est très sécurisé, et que si vous voulez lire cette requête, vous devez récupérer également la clé signé de Stripe, sans elle, impossible de récupérer les informations, pour ça, Stripe envoie un header `stripe-signature` dans chaque requête qu'elle va envoyé.
+
+Nous allons donc d'abord récupérer cette clé signé de stripe:
+
+```php
+#[Route('/notify', '.notify', methods: ['POST'])]
+public function notify(Request $request, StripeFactory $stripeFactory): JsonResponse
+{
+    $signature = $request->headers->get('stripe-signature');
+
+    if (!$signature) {
+        throw new BadRequestHttpException('Missing header stripe-signature');
+    }
+}
+```
+
+Maintenant il va falloir récupérer la requête et la vérifier pour pouvoir utiliser les informations.
+
+Pour faciliter les choses, nous allons créer une nouvelle méthode dans notre factory **StripeFactory** qui va permettre de récupérer la requête et ensuite définir les actions à faire en base de données en fonction de ce que Stripe nous envoie:
+
+- Demande de paiement créée
+- Paiement réussi
+- Paiement refusé
+- Fin de la session checkout (fin du paiement)
+
+Avant de faire tout ça nous allons devoir créer une nouvelle méthode `handle` dans la **StripeFactory**:
+
+```php
+public function handle(string $signature, mixed $body): JsonResponse
+{
+}
+```
+
+Cette nouvelle méthode prend 2 paramètres, d'abord la signature stripe, et ensuite le contenu de la requête envoyé par Stripe.
+
+On peut tout de suite faire les vérification nécessaire:
+
+```php
+public function handle(string $signature, mixed $body): JsonResponse
+{
+    if (!$body) {
+        return new JsonResponse([
+          'status' => 'error', 
+          'message' => 'Body does not be empty'
+        ], 400);
+    }
+}
+```
+
+Nous pouvons maintenant finaliser notre méthode dans le controller **StripeApiController**:
+
+```php
+#[Route('/notify', '.notify', methods: ['POST'])]
+public function notify(Request $request, StripeFactory $stripeFactory): JsonResponse
+{
+    $signature = $request->headers->get('stripe-signature');
+
+    if (!$signature) {
+        throw new BadRequestHttpException('Missing header stripe-signature');
+    }
+
+  	// On exécute la méthode handle en passant la signature
+  	// Et le contenu de la requête
+    $response = $stripeFactory->handle($signature, $request->getContent());
+
+    return $response;
+}
+```
+
+Maintenant, il va falloir récupérer les informations de stripe, pour ça, on ne peut rien faire sans la clé Webhook de votre compte stripe, c'est une clé API que vous devez avoir sur votre application pour déchiffrer les informations de stripe, c'est obligatoire pour sécuriser les communication entre votre application et Stripe.
+
+Pour récupérer votre webhook, étant donnée que nous sommes en local, vous allez devoir utiliser le stripe cli en terminal, avant qu'il lance une écoute local et qu'il puisse vous donner votre webook, pour ça rentrez la commande:
+
+```shell
+stripe listen --forward-to "https://localhost:8000/api/payment/stripe/notify" --skip-verify
+```
+
+Maintenant, tant que votre terminal tourne avec stripe, il va envoyer toutes les notifications sur les paiements fait avec votre compte stripe en mode test sur l'url https://localhost:8000/api/payment/stripe/notify, donc sur l'url que nous avons définit ensemble dans le controller API.
+
+L'argument `--skip-verify` permet de ne pas avoir de problème de vérification de certificat SSL comme nous sommes en local avec un certificat auto-signé.
+
+> [!TIP]
+>
+> Notez que dans l'url sur le cours, nous sommes sur le port 8000 car notre application Symfony tourne sur le port 8000, si vous faites tourner votre application sur un autre port, veillez à mettre le bon dans l'url
+
+Quand vous lancez cette commande, vous avez un message vous indiquant que le stripe cli est prêt à envoyer des requêtes sur votre url et vous donne également votre webhook, vous devez le copier et le mettre dans une variable dans le fichier .env.local:
+
+```env
+STRIPE_WEBHOOK="VOTRE_CLÉ_WEBHOOK"
+```
+
+N'oubliez pas de mettre à jour vos variable d'environnements avec `composer dump-env dev`
+
+Parfait, maintenant, nous devons récupérer ce webhook dans notre StripeFactory, nous allons vouloir la stocker dans une propriété:
+
+```php
+public function __construct(
+    private readonly string $stripeSecretKey,
+    private readonly string $webhook,
+) {
+    Stripe::setApiKey($this->stripeSecretKey);
+    Stripe::setApiVersion('2020-08-27');
+}
+```
+
+Le problème pour le moment est que Symfony ne sait pas qu'il faut aller chercher dans les variables d'environnement le webhook, nous allons donc devoir modifier la définition de notre service dans le fichier **config/services.yaml**:
+
+```yaml
+App\Factory\StripeFactory:
+    arguments:
+        $stripeSecretKey: "%env(STRIPE_SECRET_KEY)%"
+        $webhook: "%env(STRIPE_WEBHOOK)%"
+```
+
+Et voilà, maintenant dès que la StripeFactory va être appelée, Symfony va lui passer notre webhook.
+
+Maintenant, il va falloir créer une petite méthode dans notre StripeFactory qui va permettre de récupérer toutes les informations de la requête de Stripe avec la signature de Stripe, le body ainsi que le webhook:
+
+```php
+private function getEvent(mixed $body, string $signature): Event|JsonResponse
+{
+  try {
+    	// On utilise la class Webhook pour récupérer l'event de Stripe
+      $event = Webhook::constructEvent($body, $signature, $this->webhook);
+  } catch (\UnexpectedValueException $e) {
+    	// On gère le cas d'une erreur de valeur non attendu
+      return new JsonResponse([
+        'Error parsing payload: ' => $e->getMessage()
+      ], 400);
+  } catch (\Stripe\Exception\SignatureVerificationException $e) {
+    	// On gère le cas où stripe ne peut pas sécuriser la communicatioin
+    	return new JsonResponse([
+        'Error verifying webhook signature: ' => $e->getMessage()
+      ], 400);
+  }
+
+  return $event;
+}
+```
+
+Maintenant notre méthode handle doit exécuter cette nouvelle méthode pour récupérer un évènement:
+
+```php
+public function handle(string $signature, mixed $body): JsonResponse
+{
+    if (!$body) {
+        return new JsonResponse([
+          'status' => 'error', 
+          'message' => 'Body does not be empty'
+        ], 400);
+    }
+		
+  	// On exécute la méthode pour récupérer l'event de stripe
+    $event = $this->getEvent($body, $signature);
+		
+  	// Si $event n'est pas une instance de JsonResponse
+  	// C'est qu'il y a eu une erreur, alors on renvoie directement l'erreur
+    if ($event instanceof JsonResponse) {
+        return $event;
+    }
+		
+  	// TODO: Gestion des évènements en BDD
+  
+  	// On retourne un message de succès
+    return new JsonResponse([
+      'status' => 'success', 
+      'event' => $event
+    ], 200);
+}
+```
+
+Comme vous le voyez, ce n'est pas aussi simple que ça, pour le moment on récupère l'évènement envoyé par stripe et... on ne fait rien, pour le moment.
+
+### La gestion des évènements
+
+On touche au but, il ne reste plus qu'à gérer dynamiquement les évènements Stripe, c'est à dire, récupérer le nom de l'évènement envoyé par stripe, et exécuter les bonnes actions en BDD. Pour reprendre les différents events que stripe peut envoyer:
+
+-  Demande de paiement créée -> `payment_intent.created`
+- Paiement réussi -> `payment_intent.succeeded`
+- Paiement refusé -> `payment_intent.failed`
+- Fin de la session checkout (fin du paiement) -> `checkout.session.completed` 
+
+Pour gérer au mieux des évènements de Stripe, nous allons créer un nouvelle Évènement sur notre environnement Symfony.
+
+Symfony marche énormément sur les évènements, à chaque que vous charger une page de votre application, sans le savoir vous appeler beaucoup d'évènement définit par symfony pour afficher votre page. Ces évènements permette de séparer la logique de l'application et de pouvoir exécuter du code au bon moment.
+
+Pour créer un Event avec Symfony, c'est très simple, vous allez devoir créer un dossier **Event** dans le dossier src, et vous allez créer dans ce nouveau dossier un fichier **StripeEvent** :
+
+```php
+<?php
+
+namespace App\Event;
+
+use Stripe\ApiResource;
+use Stripe\Event;
+use Symfony\Contracts\EventDispatcher\Event as BaseEvent;
+
+// On étend de la classe de symfony Event
+class StripeEvent extends BaseEvent
+{
+    public function __construct(
+        private readonly Event $event
+    ) {
+    }
+
+  	// Cette méthode va permettre de récupérer le nom de l'event
+  	// Stripe que nous devons définir en créant une instance de StripeEvent
+    public function getName(): string
+    {
+        return $this->event->type;
+    }
+
+  	// Cette méthode va nous permettre de récupérer rapidement
+  	// Le contenu de l'event de Stripe
+    public function getResource(): ApiResource
+    {
+        return $this->event->data->object;
+    }
+}
+```
+
+Et c'est tout pour la définition de notre event, maintenant, pour avoir un exemple d'utilisation de cet Event, nous allons le créer dans notre méthode handle du fichier **StripeFactory**:
+
+```php
+public function handle(string $signature, mixed $body): JsonResponse
+{
+    if (!$body) {
+        return new JsonResponse([
+          'status' => 'error', 
+          'message' => 'Body does not be empty'
+        ], 400);
+    }
+		
+  	// On exécute la méthode pour récupérer l'event de stripe ET
+  	// On crée notre StripeEvent
+    $event = new StripeEvent($this->getEvent($body, $signature));
+		
+  	// Si $event n'est pas une instance de JsonResponse
+  	// C'est qu'il y a eu une erreur, alors on renvoie directement l'erreur
+    if ($event instanceof JsonResponse) {
+        return $event;
+    }
+		
+  	// TODO: Gestion des évènements en BDD
+  
+  	// On retourne un message de succès
+    return new JsonResponse([
+      'status' => 'success', 
+      'event' => $event
+    ], 200);
+}
+```
+
+Jusqu'ici c'est bien, nous avons maintenant un évènement "Officiel de symfony", maintenant, il va falloir définir nos **EventListener**, Symfony marche également avec énormément d'eventListener, ce sont simplement des écoutes d'évènements, en d'autres termes, les déclencheurs pour ajouter notre logique.
+
+Pour créer un eventListener, vous allez tout d'abord devoir créer un dossier **EventListener** dans le dossier src, et à l'intérieur de ce nouveau dossier, vous allez créer un fichier **StripeEventListener**:
+
+```php
+<?php
+
+namespace App\EventListener;
+
+class StripeEventListener
+{
+}
+```
+
+Nous allons faire une première méthode qui sera exécutée dès que stripe nous enverra une notification de création de demande de paiement:
+
+```php
+<?php
+
+namespace App\EventListener;
+
+use App\Event\StripeEvent;
+
+class StripeEventListener
+{
+  	public function onPaymentIntentCreated(StripeEvent $event): void
+    {
+    }
+}
+```
+
+Nous passons en paramètre à la méthode notre StripeEvent, mais pour le moment, cette méthode ne sera jamais exécutée, il faut d'abord stipuler à symfony que quand un StripeEvent aura comme nom `payment_intent.created`, il faudra exécuter cette méthode, pour ça depuis PHP 8, symfony à mis en place des attributs pour définir les eventListener, il suffit simplement de les ajouter au dessus de votre classe:
+
+```php
+<?php
+
+namespace App\EventListener;
+
+use App\Event\StripeEvent;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+
+#[AsEventListener(event: 'payment_intent.created', method: 'onPaymentIntentCreated')]
+class StripeEventListener
+{
+  	public function onPaymentIntentCreated(StripeEvent $event): void
+    {
+    }
+}
+```
+
+Et voilà, à partir de maintenant, dès que Symfony sera informé d'un évènement qui s'appelle `payment_intent.created`, il va automatiquement exécuter notre méthode onPaymentIntentCreated.
+
+Ajoutons maintenant un peu de logique:
+
+```php
+<?php
+
+namespace App\EventListener;
+
+use App\Entity\Order;
+use App\Entity\Payment;
+use App\Event\StripeEvent;
+use App\Repository\OrderRepository;
+use App\Repository\PaymentRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+
+#[AsEventListener(event: 'payment_intent.created', method: 'onPaymentIntentCreated')]
+class StripeEventListener
+{
+  	public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly PaymentRepository $paymentRepository,
+        private readonly OrderRepository $orderRepository
+    ) {
+    }
+  
+  	public function onPaymentIntentCreated(StripeEvent $event): void
+    {
+        // On récupère les informations sur l'évènement envoyé par stripe
+        $resource = $event->getResource();
+				
+      	// On gère le cas où il n'y a pas d'évènement
+        if (!$resource) {
+            throw new \InvalidArgumentException('Resource not found');
+        }
+				
+      	// On récupère le paiement et la commande grâce au informations
+      	// que nous avons définit au moment de la création du paiement
+        $payment = $this->paymentRepository->find($resource->metadata->payment_id);
+        $order = $this->orderRepository->find($resource->metadata->order_id);
+
+      	// On vérifie que nous avons bien récupéré le paiement et la commande
+        if (!$payment || !$order) {
+            throw new \InvalidArgumentException('Payment not found');
+        }
+				
+      	// On définit les statuts de la commande et la paiement
+        $payment->setStatus(Payment::STATUS_AWAITING_PAYMENT);
+        $order->setStatus(Order::STATUS_NEW);
+
+        $this->em->flush();
+    }
+}
+```
+
+Très bien, maintenant nous allons gérer le cas où le paiement est en succès:
+
+```php
+#[AsEventListener(event: 'payment_intent.created', method: 'onPaymentIntentCreated')]
+#[AsEventListener(event: 'payment_intent.succeeded', method: 'onPaymentIntentSucceeded')]
+class StripeEventListener
+{
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly PaymentRepository $paymentRepository,
+        private readonly OrderRepository $orderRepository,
+    ) {
+    }
+  
+  	// Méthode à la création d'un payment intend
+
+    public function onPaymentIntentSucceeded(StripeEvent $event): void
+    {
+        $resource = $event->getResource();
+
+        if (!$resource) {
+            throw new \InvalidArgumentException('Resource not found');
+        }
+
+        $payment = $this->paymentRepository->find($resource->metadata->payment_id);
+        $order = $this->orderRepository->find($resource->metadata->order_id);
+
+        if (!$payment || !$order) {
+            throw new \InvalidArgumentException('Payment not found');
+        }
+
+        $payment->setStatus(Payment::STATUS_PAID);
+        $order->setStatus(Order::STATUS_PAID);
+
+        $this->em->flush();
+    }
+}
+```
+
+On continue avec le cas d'un paiement refusé:
+
+```php
+#[AsEventListener(event: 'payment_intent.created', method: 'onPaymentIntentCreated')]
+#[AsEventListener(event: 'payment_intent.succeeded', method: 'onPaymentIntentSucceeded')]
+#[AsEventListener(event: 'payment_intent.failed', method: 'onPaymentIntentFailed')]
+class StripeEventListener
+{
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly PaymentRepository $paymentRepository,
+        private readonly OrderRepository $orderRepository,
+    ) {
+    }
+  
+  	// Méthode à la création d'un payment intend et paiement en succès
+
+    public function onPaymentIntentFailed(StripeEvent $event): void
+    {
+        $resource = $event->getResource();
+
+        if (!$resource) {
+            throw new \InvalidArgumentException('Resource not found');
+        }
+
+        $payment = $this->paymentRepository->find($resource->metadata->payment_id);
+        $order = $this->orderRepository->find($resource->metadata->order_id);
+
+        if (!$payment || !$order) {
+            throw new \InvalidArgumentException('Payment not found');
+        }
+
+        $payment->setStatus(Payment::STATUS_REFUSED);
+        $order->setStatus(Order::STATUS_PAYMENT_FAILED);
+
+        $this->em->flush();
+    }
+}
+```
+
+Et le dernier avec la fin d'un checkout:
+
+```php
+#[AsEventListener(event: 'payment_intent.created', method: 'onPaymentIntentCreated')]
+#[AsEventListener(event: 'payment_intent.succeeded', method: 'onPaymentIntentSucceeded')]
+#[AsEventListener(event: 'payment_intent.failed', method: 'onPaymentIntentFailed')]
+#[AsEventListener(event: 'checkout.session.completed', method: 'onStripeCheckoutComplete')]
+class StripeEventListener
+{
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly PaymentRepository $paymentRepository,
+        private readonly OrderRepository $orderRepository,
+    ) {
+    }
+  
+  	// Méthode à la création d'un payment intend et paiement en succès
+
+    public function onStripeCheckoutComplete(StripeEvent $event): void
+    {
+        $resource = $event->getResource();
+
+        if (!$resource) {
+            throw new \InvalidArgumentException('Resource not found');
+        }
+
+        $order = $this->orderRepository->find($resource->metadata->order_id);
+        $payment = $this->paymentRepository->find($resource->metadata->payment_id);
+
+        if (!$order || !$payment) {
+            throw new \InvalidArgumentException('Payment or Order not found');
+        }
+
+        if ($payment->getStatus() !== Payment::STATUS_PAID) {
+            $order->setStatus(Order::STATUS_PAYMENT_FAILED);
+            $this->em->flush();
+        } elseif ($order->getStatus() !== Order::STATUS_PAID) {
+            $order->setStatus(Order::STATUS_PAID);
+            $this->em->flush();
+        }
+    }
+}
+```
+
+Et voilà, vous avez gérez tous les évènements de stripe, une toute dernière petite étape dans la méthode handle du **StripeFactory**, il va falloir une fois qu'on a récupérer notre évènement depuis stripe dispatcher les différents évènements, pour ça nous allons devoir utiliser l'**EventDispatcher** de symfony, tout d'abord, vous allez ajouter la classe dans le construct de votre stripeFactory:
+
+```php
+public function __construct(
+    private readonly string $stripeSecretKey,
+    private readonly string $webhook,
+    private readonly EventDispatcherInterface $eventDispatcher,
+) {
+    Stripe::setApiKey($this->stripeSecretKey);
+    Stripe::setApiVersion('2020-08-27');
+}
+```
+
+Mais pour que Symfony fasse correctement l'autowiring, vous devez également modifier votre fichier services.yaml et la définition de votre service:
+
+```yaml
+App\Factory\StripeFactory:
+  arguments:
+      $stripeSecretKey: "%env(STRIPE_SECRET_KEY)%"
+      $webhook: "%env(STRIPE_WEBHOOK)%"
+      $eventDispatcher: "@event_dispatcher"
+```
+
+Dernière étape, utiliser l'event dispatcher dans la méthode handle:
+
+```php
+public function handle(string $signature, mixed $body): JsonResponse
+{
+    if (!$body) {
+        return new JsonResponse([
+          'status' => 'error', 
+          'message' => 'Body does not be empty'
+        ], 400);
+    }
+
+    $event = new StripeEvent($this->getEvent($body, $signature));
+
+    if ($event instanceof JsonResponse) {
+        return $event;
+    }
+	
+  	// On dispatch l'evenement en lui donnant l'event et le nom de l'event
+  	// C'est ce qui va déclencher vos eventListener
+    $this->eventDispatcher->dispatch($event, $event->getName());
+
+    return new JsonResponse([
+      'status' => 'success', 
+      'event' => $event
+    ], 200);
+}
+```
+
+<span style="color:green;font-weight:bold;font-size:2em">Et voilà vous avez maintenant un site E commerce fonctionnel !</span> 
+
+> [!TIP]
+>
+> Vous pouvez maintenant gérer vos commandes dans la partie admin ainsi qu'optimiser la partie compte de chaque utilisateur !
+

@@ -13,6 +13,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: 'payment_intent.created', method: 'onPaymentIntentCreated')]
 #[AsEventListener(event: 'payment_intent.succeeded', method: 'onPaymentIntentSucceeded')]
+#[AsEventListener(event: 'payment_intent.failed', method: 'onPaymentIntentFailed')]
 #[AsEventListener(event: 'checkout.session.completed', method: 'onStripeCheckoutComplete')]
 class StripeEventListener
 {
@@ -31,9 +32,6 @@ class StripeEventListener
         if (!$resource) {
             throw new \InvalidArgumentException('Resource not found');
         }
-
-        // $this->logger->critical($resource->metadata->payment_id);
-        $this->logger->critical(json_encode($resource));
 
         $payment = $this->paymentRepository->find($resource->metadata->payment_id);
         $order = $this->orderRepository->find($resource->metadata->order_id);
@@ -85,14 +83,13 @@ class StripeEventListener
         }
 
         $payment->setStatus(Payment::STATUS_REFUSED);
-        $order->setStatus(Order::STATUS_NEW);
+        $order->setStatus(Order::STATUS_PAYMENT_FAILED);
 
         $this->em->flush();
     }
 
     public function onStripeCheckoutComplete(StripeEvent $event): void
     {
-
         $resource = $event->getResource();
 
         if (!$resource) {
