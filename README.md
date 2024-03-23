@@ -2818,3 +2818,642 @@ Maintenant il faut simplement faire la vue:
 Maintenant, il va falloir passer à la gestion du paiement, avec l'intégration de l'API Stripe.
 
 ## Le paiement avec Stripe
+
+À partir de maintenant, nous allons nous intéresser un peu plus à la partie paiement des commandes, pour accepter un paiement sur votre plateforme, vous devez passer par une passerelle de paiement, c'est une API qui va permettre de récupérer les coordonnées bancaires de vos utilisateur et d'effectuer des transfert d'argent en communiquant avec les banques. Pour ce cours, nous allons utiliser [Stripe](https://stripe.com/fr) qui est une passerelle de paiement grandement utilisé sur le web, elle est fiable et sécurisée.
+
+Avant toute chose, vous allez devoir créer un compte Stripe, pour ça vous pouvez aller sur le site de Stripe en [cliquant ici](https://dashboard.stripe.com/register)
+
+> [!IMPORTANT]
+>
+> Pour créer un compte Stripe, vous serez obliger de renseigner un compte Bancaire à votre compte Stripe, donc vous n'êtes en aucun cas obligé de vous créer un compte si vous ne voulez pas transmettre vos information bancaire, à noter que si vous n'utilisez Stripe qu'en mode Test, aucune transaction ne sera effectué, c'est seulement si vous acceptez de vrai paiement avec votre compte Stripe que stipe fera des virements sur votre compte.
+>
+
+Une fois que vous avez créé votre compte Stripe, vous devriez être redirigé sur le Dashboard de votre compte.
+
+![Dashboard Stripe](./docs/stripe-dashbord.png)
+
+La première chose à faire est de sélectionner le mode test de votre compte Stripe car pour le cours et pendant le développement, nous n'allons pas vraiment accepter des paiements, nous allons les simuler pour faire le développement de notre application.
+
+Pour passer en mode test, vous devez cliquer sur le bouton dans le header `Mode test`.
+
+![Stripe mode test](./docs/stripe-mode-test.png)
+
+Maintenant, afin de pouvoir communiquer avec l'API de stripe depuis votre application Symfony, vous allez devoir récupérer les clés d'API de votre compte stripe, ici nous allons récupérer les clé API **en mode test**, pour ça vous devez cliquer sur le lien `Développeurs` dans le header, ensuite vous devez cliquer sur l'onglet Clés API. Sur cette page, vous avez 2 types de clés:
+
+- La clé publique
+- La clé privée
+
+Nous aurons besoin des deux pour communiquer de manière sécurisé avec votre compte stripe.
+
+Dans votre fichier .env.local, vous allez devoir rajouter 2 variables d'environnements:
+
+- STRIPE_SECRET_KEY
+- STRIPE_PUBLIC_KEY
+
+Maintenant, vous allez devoir passer en valeur les 2 clés d'API de votre compte Stripe.
+
+Ensuite, mettez à jour vos variables d'environnement avec  `composer dump-env dev`
+
+## Définition du service Stripe
+
+Maintenant que nous avons configuré notre compte Stripe et récupéré les clés d'API, il va falloir que votre application puisse gérer les communications avec l'API de stripe, à savoir, envoyer à Stripe une demande de paiement, récupérer les informations sur le paiement.
+
+### Installation du bundle Stripe
+
+Pour facilité les choses, nous allons utiliser le bundle de Stripe, pour l'installer, faite le commande:
+
+```shell
+composer require stripe/stripe-php 
+```
+
+Et voilà, nous allons pouvoir commencer à utiliser le bundle.
+
+### La factory Stripe
+
+Pour facilité les choses, nous allons pouvoir nous créer une nouvelle Factory pour gérer les actions avec Stripe, vous allez donc créer un nouveau fichier dans le dossier Factory **StripeFactory**:
+
+```php
+<?php
+
+namespace App\Factory;
+
+class StripeFactory
+{
+}
+```
+
+La première chose que nous allons devoir définir, c'est le construct, afin de pouvoir récupérer dynamiquement notre clé secrète API Stripe depuis notre fichier .env.local et la stocker dans une propriété:
+
+```php
+<?php
+
+namespace App\Factory;
+
+class StripeFactory
+{
+  	public function __construct(
+    		private readonly string $stripeSecretKey,
+    ) {
+    }
+}
+```
+
+La problématique que Symfony va rencontrer quand nous allons utilisé cette Factory, c'est qu'il ne va pas pré-remplir automatiquement la propriété `$stripeSecretKey` en allant chercher dans les variables d'environnement, pour ça, il va falloir définir cette action pour symfony en ajoutant la configuration du service, pour ça, vous allez modifier votre fichier **config/services.yaml** et à la fin du fichier rajouter:
+
+```yaml
+# On stipule le namespace de notre factory pour pouvoir lui définir les options
+App\Factory\StripeFactory:
+		# On définit la valeur par défaut à mettre dans les arguments du construct
+  	arguments:
+  			# On récupère dans les variables d'env la valeur de STRIPE_SECRET_KEY
+        $stripeSecretKey: "%env(STRIPE_SECRET_KEY)%"
+```
+
+Et voilà, maintenant, à chaque fois que vous allez utiliser la classe StripeFactory, symfony va automatiquement passer dans le construct votre clé secrète API.
+
+Maintenant que nous avons fait ça, nous allons devoir configurer Stripe dans cette Factory en lui passant notre clé secrète API ainsi que définir la version de l'API de stripe que nous utilisons, pour ça nous allons ajouter un peu de logique dans le construct:
+
+```php
+// use Stripe\Stripe;
+
+public function __construct(
+    private readonly string $stripeSecretKey,
+) {
+  	// On définit la clé secrète API
+    Stripe::setApiKey($this->stripeSecretKey);
+  	// On définit la version de l'API
+    Stripe::setApiVersion('2020-08-27');
+}
+```
+
+### La création d'un paiement
+
+Afin de pouvoir créer un paiement, il va falloir que nous puissions le stocker en BDD pour suivre son statut, si vous avez bien regardé le schéma MLD, vous avez pu voir une entity Payment qui est relié à une commande, avant d'aller plus loins, vous pouvez créer cette nouvelle entity en vous basant sur le schéma.
+
+Pour le status, non allons mettre en place des constantes pour définir les statut des paiements, pour ça, ajouter les constantes suivante à l'entity Payment et créez une assertion Choice sur le statut avec les constantes:
+
+```php
+class Payment
+{
+ 		public const STATUS_NEW = 'new';
+    public const STATUS_AWAITING_PAYMENT = 'await_paid';
+    public const STATUS_PAID = 'paid';
+    public const STATUS_CANCELED = 'canceled';
+    public const STATUS_REFUSED = 'refused';
+  
+  	// ...
+  
+  	#[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: [
+        self::STATUS_NEW, 
+        self::STATUS_AWAITING_PAYMENT, 
+        self::STATUS_PAID, 
+        self::STATUS_CANCELED, 
+        self::STATUS_REFUSED
+    ])]
+    private ?string $status = null;
+}
+```
+
+Et voilà, votre application peut maintenant sauvegarder les paiements en base de données.
+
+#### Le formulaire
+
+Maintenant pour faciliter la création d'un paiement et la liaison avec une commande, il va falloir intégrer un formulaire dans le checkout, sur la page de récapitulatif, à la soumission de ce formulaire, nous allons créer un paiement en BDD, et envoyer les informations à Stripe pour que le client soit redirigé sur la page de paiement.
+
+Donc dans un premier temps, nous allons créer le formulaire **PaymentType**:
+
+```php
+<?php
+
+namespace App\Form;
+
+use App\Entity\Payment;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class PaymentType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('status', HiddenType::class);
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => Payment::class,
+        ]);
+    }
+}
+```
+
+Comme vous le voyez, nous mettons simplement le champs status en Hidden pour que le client ne vois que le bouton de soumission sur la page, ensuite nous gérerons dynamiquement la liaison dans le controller.
+
+Maintenant, nous allons ajouter le formulaire dans le CheckoutController pour la page de récap:
+
+```php
+#[Route('/payment', '.payment', methods: ['GET', 'POST'])]
+public function recap(Request $request): Response|RedirectResponse
+{
+    $user = $this->getUser();
+
+    if (!$user) {
+        $this->addFlash('error', 'Vous devez être connecté pour passer commande');
+
+        return $this->redirectToRoute('app.login');
+    }
+
+    $order = $this->cartManager->getCurrentCart();
+
+    if (!$order || count($order->getItems()) < 1) {
+        $this->addFlash('error', 'Votre panier est vide');
+
+        return $this->redirectToRoute('app.cart');
+    }
+		
+  	// On créé un nouveau paiement et on relie l'utilisateur
+  	// Et la commande, enfin on définit le status
+    $payment = (new Payment)
+        ->setUser($user)
+        ->setOrderRef($order)
+        ->setStatus(Payment::STATUS_NEW);
+
+    $form = $this->createForm(PaymentType::class, $payment);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Traitement du paiement
+    }
+
+    return $this->render('Frontend/Checkout/recap.html.twig', [
+        'cart' => $order,
+        'formStripe' => $form,
+    ]);
+}
+```
+
+Maintenant, nous allons gérer la persistance en BDD, pour des raisons de sécurité, nous devons redéfinir le status du paiement à new après la soumission du formulaire, car en front, un utilisateur pourrait modifier la valeur de l'input Hidden, ce qui générerait des erreurs pour la suite:
+
+```php
+if ($form->isSubmitted() && $form->isValid()) {
+    $payment->setStatus(Payment::STATUS_NEW);
+    $this->em->persist($payment);
+    $this->em->flush();
+}
+```
+
+Et voilà, nous pouvons enregistrer les paiements en BDD, maintenant il faut envoyer toute les informations à stripe pour que l'utilisateur soit redirigé sur la page de paiement de stripe (Nous allons utiliser Stripe Checkout pour simplifier les choses).
+
+### Créer une session Stripe
+
+Avant de pouvoir effectuer la redirection vers la page de paiement Stripe, il va falloir créer un objet Session de Stripe en lui passant toutes les informations utiles (Email du client, nom des produits, prix etc...), pour ça, nous allons utiliser notre Factory Stripe pour bien séparer les choses, nous allons donc créer une nouvelle méthode dans notre factory pour créer une session:
+
+```php
+use Webmozart\Assert\Assert;
+
+// ...
+public function createPayment(Payment $payment): Session
+{
+  	// On récupère les informations de la commande ratachés au paiement
+    $order = $payment->getOrderRef();
+  	// On gère le cas d'erreur
+    Assert::notNull($order, 'Order must not be null');
+}
+```
+
+Maintenant, il faut comprendre comment Stripe doit avoir les données, nous devons respecter les règles de  l'API de Stripe pour communiquer correctement avec, pour créer une session Checkout stripe pour un paiement il faut les informations suivantes:
+
+```php
+[
+  'mode' => 'payment',
+  'success_url' => 'URL de redirection après le paiement',
+  'cancel_url' => 'URL de redirection si le paiement a été annullé',
+  'customer_email' => 'Email du user (FACULTATIF)',
+  // Définition des produits
+  'line_items' => [
+    [
+      'quantity' => 1,
+      // Définition du prix d'un produit
+      'price_data' => [
+        'currency' => 'eur',
+        // Définition des informations du produit
+        'product_data' => [
+          'name' => 'Nom du produit',
+          // Facultatif
+          'description' => 'Description du produit',
+          // Facultatif
+          'images' => [
+            'URL ABSOLUE IMAGE PRODUIT'
+          ]
+        ],
+        // Prix du produit exemple avec prix à 99.99€
+        // Stripe doit va faire un calcul et bien retrouver 99.99
+        // Il faut décaler la , de 2 par la droite
+        'unit_amount' => 9999
+      ]
+    ],
+    // Information supplémentaire à passer pour le récupérer plus tard
+    // Facultatif
+    'metadata' => [
+      'order_id' => 'ID de la commande en BDD',
+      'payment_id' => 'ID du paiement en BDD'
+    ]
+  ]
+]
+```
+
+Voilà, maintenant, vous savez comment vous devez envoyer les donner à Stripe, il faut maintenant intégrer notre logique afin de pouvoir envoyer les vraies données de notre commande à Stripe pour créer la page de paiement, pour créer la page de paiement et envoyer les données, nous allons utiliser la classe Session du bundle stripe et la méthode createSession:
+
+```php
+// On récupère également l'url de success et cancel dans cette méthode
+public function createPayment(Payment $payment, string $successUrl, string $cancelUrl): Session
+{
+    $order = $payment->getOrderRef();
+    Assert::notNull($order, 'Order must not be null');
+
+    return Session::create([]);
+}
+```
+
+Notre méthode va retourner tout l'objet Stripe que nous utiliserons dans le controller pour gérer la redirection vers la page de paiement Stripe avec toutes les informations que nous allons définir:
+
+```php
+public function createPayment(Payment $payment, string $successUrl, string $cancelUrl): Session
+{
+    $order = $payment->getOrderRef();
+    Assert::notNull($order, 'Order must not be null');
+
+    return Session::create([
+      	'mode' => 'payment',
+        'success_url' => $successUrl,
+        'cancel_url' => $cancelUrl,
+        'customer_email' => $payment->getUser()->getEmail(),
+      	'line_items' => [],
+      	'metadata' => [
+            'order_id' => $order->getId(),
+            'payment_id' => $payment->getId(),
+        ],
+    ]);
+}
+```
+
+Comme vous le voyez, je n'ai pas encore définit le tableau line items car nous devons le générer automatiquement. Avant de se lancer, il faut comprendre notre algo, nous devons pour chaque orderItem définir le tableau suivant dynamiquement:
+
+```php
+[
+    'quantity' => "Quantité de l'orderItem",
+    'price_data' => [
+        'currency' => 'eur',
+        'product_data' => [
+            'name' => "Nom du produit relié à l'order item",
+            'description' => "Description courte du produit relié à l'ordre item",
+            'images' => [
+                'https://picsum.photos/300/200'
+            ],
+        ],
+        'unit_amount' => "Calcule du prix de l'orderItem",
+    ],
+]
+```
+
+Sachant ça, nous pourrions faire une boucle foreach avant de définir la session sur tous les order Items de la commande, et définir plusieurs tableaux comme ci-dessus avec les données. Mais maintenant, vous commencez à devenir des développeurs plus expérimentés, donc nous allons utiliser une fonctionnalité de PHP pour rendre notre code plus "propre" en utilisant la fonction `array_map()`.
+
+La fonction `array_map` en PHP est utilisée pour appliquer une fonction donnée à chaque élément d'un tableau (ou plusieurs tableaux), et renvoyer un nouveau tableau contenant les résultats de ces applications de fonction. Voici une explication claire et simple :
+
+Supposons que vous ayez un tableau de nombres et que vous vouliez doubler chaque nombre dans ce tableau. Plutôt que d'utiliser une boucle `foreach` pour parcourir chaque élément et doubler son contenu, vous pouvez utiliser `array_map` pour le faire plus efficacement.
+
+Voici un exemple concret :
+
+```php
+// Définir une fonction pour doubler un nombre
+function doubler($nombre) {
+    return $nombre * 2;
+}
+
+// Tableau de nombres
+$nombres = [1, 2, 3, 4, 5];
+
+// Appliquer la fonction doubler à chaque élément du tableau
+$nouveauxNombres = array_map("doubler", $nombres);
+
+// Afficher le nouveau tableau
+var_dump($nouveauxNombres);
+```
+
+Dans cet exemple :
+
+- Nous avons défini une fonction `doubler` qui prend un nombre en paramètre et le double.
+- Ensuite, nous avons un tableau de nombres `$nombres`.
+- En utilisant `array_map`, nous appliquons la fonction `doubler` à chaque élément de `$nombres`.
+- Le résultat est stocké dans `$nouveauxNombres`.
+
+Après l'exécution de ce code, `$nouveauxNombres` contiendra `[2, 4, 6, 8, 10]`, qui sont les nombres doublés du tableau initial.
+
+C'est donc une manière concise et pratique d'appliquer une fonction à chaque élément d'un tableau et de récupérer les résultats dans un nouveau tableau.
+
+Et vous pouvez le faire de manière encore plus concise en définissant la fonction directement en exécutant la fonction array_map:
+
+```php
+// Tableau de nombres
+$nombres = [1, 2, 3, 4, 5];
+
+// Appliquer la fonction doubler à chaque élément du tableau
+$nouveauxNombres = array_map(fn(int $number): int {
+  return $number * 2;
+}, $nombres);
+
+// Afficher le nouveau tableau
+var_dump($nouveauxNombres);
+```
+
+Ici nous avons utilisé une fonction fléchés en PHP pour définir la fonction à exécuter sur chaque élément du tableau que nous passons directement en paramètre de la fonction array_map.
+
+Maintenant que vous savez ça, nous pouvons retourner à la définition de nos line_items:
+
+```php
+public function createPayment(Payment $payment, string $successUrl, string $cancelUrl): Session
+{
+    $order = $payment->getOrderRef();
+    Assert::notNull($order, 'Order must not be null');
+
+    return Session::create([
+      	'mode' => 'payment',
+        'success_url' => $successUrl,
+        'cancel_url' => $cancelUrl,
+        'customer_email' => $payment->getUser()->getEmail(),
+      	'line_items' => array_map(fn(OrderItem $order): array {
+          
+        }, $order->getItems()->toArray()),
+      	'metadata' => [
+            'order_id' => $order->getId(),
+            'payment_id' => $payment->getId(),
+        ],
+    ]);
+}
+```
+
+Ici nous avons utilisé array_map afin d'exécuter une fonction que nous allons définir pour chaque orderItem relié à notre commande (`$order->getItems()->toArray()`).
+
+Parfait, maintenant, nous devons pour chaque OrderItem récupérer dynamiquement les données pour pré-remplir le tableau line_items avec les bonnes informations:
+
+```php
+'line_items' => array_map(fn(OrderItem $order): array {
+    'quantity' => $order->getQuantity(),
+    'price_data' => [
+        'currency' => 'eur',
+        'product_data' => [
+            'name' => $order->getQuantity() . ' x - ' . $order->getProduct()->getTitle(),
+            'description' => $order->getProduct()->getshortDescription(),
+            'images' => [
+                'https://picsum.photos/300/200'
+            ],
+        ],
+      	// On utilise bcmul pour transformer le prix pour qu'il soit compatible
+      	// Avec celui attendu par Stripe
+      	// Exemple: 99.99 doit être 9999
+        'unit_amount' => bcmul($order->getProduct()->getPriceTTC(), 100),
+    ],
+}, $order->getItems()->toArray()),
+```
+
+Et voilà, nous avons remplis dynamiquement toutes les informations des line_items, voici la méthode de notre Factory au complet:
+
+```php
+public function createPayment(Payment $payment, string $successUrl, string $cancelUrl): Session
+{
+  $order = $payment->getOrderRef();
+  Assert::notNull($order, 'Order must not be null');
+
+  return Session::create([
+    'mode' => 'payment',
+    'success_url' => $successUrl,
+    'cancel_url' => $cancelUrl,
+    'customer_email' => $payment->getUser()->getEmail(),
+    'line_items' => array_map(fn (OrderItem $order) => [
+      'quantity' => $order->getQuantity(),
+      'price_data' => [
+          'currency' => 'eur',
+          'product_data' => [
+              'name' => $order->getQuantity() . ' x - ' . $order->getProduct()->getTitle(),
+              'description' => $order->getProduct()->getshortDescription(),
+              'images' => [
+                  'https://picsum.photos/300/200'
+              ],
+          ],
+          'unit_amount' => bcmul($order->getProduct()->getPriceTTC(), 100),
+      ],
+    ], $order->getItems()->toArray()),
+    'metadata' => [
+      'order_id' => $order->getId(),
+      'payment_id' => $payment->getId(),
+    ],
+  ]);
+}
+```
+
+Dernière petite chose pour préparer la suite de notre application (la gestion des retours d'informations sur le paiement par stripe), nous allons également définir une option supplémentaire à notre objet session `payment_intent_data` qui va nous permettre de stocker des informations supplémentaires sur le paiement, afin de pouvoir les récupérer quand Stripe va nous répondre, ajoutez donc cette clé au tableau associatif de session que nous avons définit:
+
+```php
+'payment_intent_data' => [
+    'metadata' => [
+        'order_id' => $order->getId(),
+        'payment_id' => $payment->getId(),
+    ]
+]
+```
+
+Parfait, maintenant, nous pouvons rapidement créer des objet session Stripe, il faut maintenant que dans notre controller nous exécutions cette méthode, vous allez modifier notre méthode récap dans le CheckoutController:
+
+```php
+#[Route('/payment', '.payment', methods: ['GET', 'POST'])]
+    public function recap(Request $request, StripeFactory $stripeFactory): Response|RedirectResponse
+{
+    $user = $this->getUser();
+
+    if (!$user) {
+        $this->addFlash('error', 'Vous devez être connecté pour passer commande');
+
+        return $this->redirectToRoute('app.login');
+    }
+
+    $order = $this->cartManager->getCurrentCart();
+
+    if (!$order || count($order->getItems()) < 1) {
+        $this->addFlash('error', 'Votre panier est vide');
+
+        return $this->redirectToRoute('app.cart');
+    }
+
+    $payment = (new Payment)
+        ->setUser($user)
+        ->setOrderRef($order)
+        ->setStatus(Payment::STATUS_NEW);
+
+    $form = $this->createForm(PaymentType::class, $payment);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $payment->setStatus(Payment::STATUS_NEW);
+        $this->em->persist($payment);
+        $this->em->flush();
+				
+      	// On execute la méthode de notre factory pour créer l'objet session Stripe
+      	// Avec les données du paiement et de la commande
+        $session = $stripeFactory->createPayment(
+            $payment,
+          	// On doit passer l'url ABSOLUE du retour du paiement
+          	// Nous allons devoir créer cette route par la suite
+            $this->generateUrl('app.checkout.success', [
+                'id' => $payment->getId(),
+            ], UrlGeneratorInterface::ABSOLUTE_URL),
+            $this->generateUrl('app.checkout.cancel', [
+                'id' => $payment->getId(),
+            ], UrlGeneratorInterface::ABSOLUTE_URL)
+        );
+    }
+
+    return $this->render('Frontend/Checkout/recap.html.twig', [
+        'cart' => $order,
+        'formStripe' => $form,
+    ]);
+}
+```
+
+Comme vous le voyez, nous allons devoir créer 2 nouvelles routes qui vont gérer la page du retour de paiement en succès ou d'un annulation de paiement, ajoutez ces routes dans votre CheckoutController:
+
+```php
+#[Route('/success/{id}', '.success', methods: ['GET'])]
+public function success(Payment $payment): Response
+{
+    dd($payment);
+}
+
+#[Route('/cancel/{id}', '.cancel', methods: ['GET'])]
+public function cancel(?Payment $payment): Response
+{
+  	dd($payment);
+}
+```
+
+Très bien, toute dernière chose à faire, nous devons rediriger sur l'url de la session Stripe définit dans l'objet session que nous avons généré:
+
+```php
+#[Route('/payment', '.payment', methods: ['GET', 'POST'])]
+public function recap(Request $request, StripeFactory $stripeFactory): Response|RedirectResponse
+{
+    $user = $this->getUser();
+
+    if (!$user) {
+        $this->addFlash('error', 'Vous devez être connecté pour passer commande');
+
+        return $this->redirectToRoute('app.login');
+    }
+
+    $order = $this->cartManager->getCurrentCart();
+
+    if (!$order || count($order->getItems()) < 1) {
+        $this->addFlash('error', 'Votre panier est vide');
+
+        return $this->redirectToRoute('app.cart');
+    }
+
+    $payment = (new Payment)
+        ->setUser($user)
+        ->setOrderRef($order)
+        ->setStatus(Payment::STATUS_NEW);
+
+    $form = $this->createForm(PaymentType::class, $payment);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $payment->setStatus(Payment::STATUS_NEW);
+        $this->em->persist($payment);
+        $this->em->flush();
+
+        $session = $stripeFactory->createPayment(
+            $payment,
+            $this->generateUrl('app.checkout.success', [
+                'id' => $payment->getId(),
+            ], UrlGeneratorInterface::ABSOLUTE_URL),
+            $this->generateUrl('app.checkout.cancel', [
+                'id' => $payment->getId(),
+            ], UrlGeneratorInterface::ABSOLUTE_URL)
+        );
+				
+      	// On redirige vers la page de paiement Stripe
+        return $this->redirect($session->url);
+    }
+
+    return $this->render('Frontend/Checkout/recap.html.twig', [
+        'cart' => $order,
+        'formStripe' => $form,
+    ]);
+}
+```
+
+Et voilà,  maintenant, sur la page de récap, si vous soumettez votre formulaire, vous serez automatiquement redirigé vers la page de paiement stripe avec toutes les informations définit dans la commande sur votre application.
+
+En mode test, vous pouvez tester un paiement réussi en renseignant un numéro de carte **4242 4242 4242 4242**, pour le reste des informations il faut juste mettre une date d'expiration supérieur à la date du jour et n'importe quel numéro pour le CVC.
+
+Et voilà vous pouvez maintenant accepter des paiements avec Stripe ! Il ne reste plus qu'à récupérer les informations que Stripe va vous renvoyer concernant le paiement pour effectuer la mise à jour en BDD et suivre le status du paiement et de la commande sur votre application.
+
+## Les webhooks de Stripe
+
+Un webhook est un moyen pour les applications web de communiquer entre elles de manière automatique et en temps réel. Dans le contexte de l'utilisation d'une API, un webhook est souvent utilisé pour recevoir des notifications instantanées lorsqu'un événement spécifique se produit sur le serveur de l'API.
+
+Voici une explication claire et simple du fonctionnement d'un webhook dans le cadre de l'utilisation d'une API :
+
+1. **Configuration initiale :** Lorsque vous utilisez une API qui prend en charge les webhooks, vous configurez généralement une URL de webhook dans les paramètres de votre compte ou de votre application. Cet URL est fourni par l'application ou le service qui souhaite vous envoyer des notifications.
+2. **Déclenchement d'événement :** Lorsqu'un événement spécifique se produit sur le serveur de l'API (par exemple, une nouvelle commande est passée, une mise à jour est effectuée, etc.), l'API envoie une requête HTTP POST à l'URL de webhook que vous avez configuré.
+3. **Réception et traitement :** Votre application web reçoit cette requête POST sur l'URL de webhook spécifié. Elle peut alors extraire les données de la requête et effectuer les actions nécessaires en réponse à cet événement. Par exemple, votre application pourrait mettre à jour une base de données, envoyer un e-mail de notification, ou déclencher d'autres processus automatisés.
+4. **Confirmation :** Après avoir reçu la notification, votre application doit généralement renvoyer une réponse HTTP au serveur de l'API pour confirmer la réception de la notification. Cela permet à l'API de savoir que la notification a été livrée avec succès.
+
+En résumé, un webhook dans le contexte de l'utilisation d'une API permet à votre application de recevoir des notifications en temps réel sur des événements importants qui se produisent sur le serveur de l'API. Cela facilite l'intégration et l'automatisation des processus entre différentes applications et services en ligne.
+
+Vous l'aurez compris, étant donné que nous utilisons une API (Stripe) qui gère les webhook, nous allons nous en servir pour suivre l'état du paiement qui sera envoyé pars tripe sur une URL de notre application qui aura pour but d'effectuer les mises à jour de notre commande et/ou paiement.
