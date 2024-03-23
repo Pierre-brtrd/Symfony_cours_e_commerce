@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Site e-commerce
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="banner-hero-home">
+		<div class="banner-hero-home-header">
+			<h1>Welcome sur le site e-commerce Symfony</h1>
+		</div>
+	</section>
+	<section class="container mt-2">
+		<h1 class="text-center mb-2">Nos derniers produits</h1>
+		<a href="{{ path('app.products.index') }}" class="btn btn-primary mb-4">Voir les produits</a>
+		<div class="row">
+			{% for product in products %}
+				{% include 'Frontend/Products/_card.html.twig' %}
+			{% endfor %}
+		</div>
+	</section>
+{% endblock %}

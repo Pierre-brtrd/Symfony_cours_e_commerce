@@ -1,0 +1,42 @@
+{% extends 'Frontend/User/baseAccount.html.twig' %}
+
+{% block title %}
+	Mes adresses
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}
+	{% import 'Backend/Common/_deleteForm.html.twig' as common %}
+
+	<div class="col-12 col-md-8 col-lg-9">
+		<p class="text-muted mb-2">Gérer vos adresses enregistrées</p>
+		<a href="{{ path('app.user.address.add') }}" class="btn btn-primary mb-3">Ajouter une adresse</a>
+		<div class="row gy-2">
+			{% for address in user.addresses %}
+				<div class="col-md-6">
+					<div class="card {{ address == user.defaultAddress ? 'border-secondary' }}">
+						<div class="card-body">
+							<address>
+								<strong>{{ address.user.fullName }}</strong>
+								<br/>
+								{{ address.address }}
+								<br/>
+								{{ address.city }},
+								{{ address.zipCode }}
+							</address>
+							<div class="d-flex flex-wrap gap-2">
+								<a href="{{ address == user.defaultAddress ? '#' : path('app.user.address.default', {id: address.id}) }}" class="btn btn-{{ address == user.defaultAddress ? 'outline-primary disabled' : 'primary' }}">{{ address == user.defaultAddress ? 'Adresse par défaut' : 'Définir comme par défaut' }}</a>
+								<a href="{{ path('app.user.address.edit', {'id': address.id}) }}" class="btn btn-primary">Modifier</a>
+								{{ common.deleteForm(path('app.user.address.delete', {id: address.id}), address.id) }}
+							</div>
+						</div>
+					</div>
+				</div>
+			{% else %}
+				<div class="alert alert-info">
+					Vous n'avez pas encore enregistré d'adresse
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

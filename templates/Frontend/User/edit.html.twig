@@ -1,0 +1,24 @@
+{% extends 'Frontend/User/baseAccount.html.twig' %}
+
+{% block title %}
+	Modifier mon compte
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}
+	<div class="col-12 col-md-8 col-lg-9">
+		<p class="text-muted mb-2">Modifier vos informations personnelles</p>
+		<div class="card border-1 shadow-lg">
+			<div class="card-body">
+				{{ form_start(form) }}
+				<div class="row">
+					<div class="col-md-6">{{ form_row(form.firstName) }}</div>
+					<div class="col-md-6">{{ form_row(form.lastName) }}</div>
+				</div>
+				{{ form_widget(form) }}
+				<button type="submit" class="btn btn-primary">Modifier</button>
+				{{ form_end(form) }}
+			</div>
+		</div>
+	</div>
+{% endblock %}

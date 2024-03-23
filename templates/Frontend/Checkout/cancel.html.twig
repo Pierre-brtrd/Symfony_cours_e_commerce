@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Erreur lors du paiement de la commande
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Une erreur est survenue au moment du paiement</h1>
+		<div class="alert alert-danger" role="alert">
+			<p class="mb-0">Une erreur est survenue au moment du paiement</p>
+		</div>
+	</section>
+{% endblock %}

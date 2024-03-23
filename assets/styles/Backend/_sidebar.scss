@@ -1,0 +1,90 @@
+body {
+    overflow-x: hidden;
+}
+
+.wrapper {
+    padding-left: 0;
+    transition: all 0.5s ease;
+
+    .toggle-sidebar {
+        position: relative;
+
+        .btn-toggle-sidebar {
+            position: absolute;
+            top: 2%;
+            right: 0;
+            transform: translateX(100%);
+            border: 1px solid $primary;
+            color: $primary;
+            border-radius: 0 8px 8px 0;
+            background: $secondary;
+            font-size: 2em;
+        }
+    }
+
+    &.toggled {
+        padding-left: 250px;
+
+        .sidebar-wrapper {
+            width: 250px;
+        }
+
+        .page-content-wrapper {
+            position: absolute;
+            width: calc(100% - 250px);
+            margin-right: -250px;
+        }
+    }
+
+    .sidebar-wrapper {
+        z-index: 1000;
+        position: fixed;
+        top: 0;
+        left: 250px;
+        width: 0;
+        height: 100%;
+        margin-left: -250px;
+        background: $primary;
+        transition: all 0.5s ease;
+
+        .sidebar-nav {
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            color: $white;
+            transition: all 0.5s ease;
+
+            .sidebar-item {
+                text-indent: 10px;
+                line-height: 40px;
+                width: 250px;
+
+                a:not(.logo) {
+                    display: block;
+                    color: #999999;
+                    transition: all 0.4s ease;
+
+                    &:hover,
+                    &.active {
+                        color: #fff;
+                        background: rgba(255, 255, 255, 0.2);
+                    }
+                }
+            }
+
+            .sidebar-logo {
+                font-weight: bold;
+                font-size: 1.4em;
+                margin-bottom: 2em;
+            }
+        }
+    }
+
+    .page-content-wrapper {
+        width: 100%;
+        position: absolute;
+        top: 0;
+        padding: 1em;
+        transition: all 0.5s ease;
+    }
+}

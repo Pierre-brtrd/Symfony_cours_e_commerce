@@ -1,0 +1,18 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Modification
+	{{ user.fullName }}
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center mb-3">
+			Modification de
+			{{ user.fullName }}
+		</h1>
+		{% include 'Backend/Users/_form.html.twig' %}
+		<a href="{{ path('admin.users.index') }}" class="btn btn-primary mt-3">Retour à la liste</a>
+	</section>
+{% endblock %}

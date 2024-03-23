@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Validation de commande adresse
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Validation de commande: Adresse</h1>
+		<a href="{{ path('app.cart') }}" class="btn btn-primary mt-2">Retour au panier</a>
+		<div class="row mt-4">
+			<div class="col-md-7">
+				{{ form_start(form, {attr: {class: 'card form-checkout-address'}}) }}
+				<h2 class="card-header bg-primary text-light">Votre Adresse</h2>
+				<div class="card-body">
+					{% if app.user.addresses|length > 1 %}
+						<div class="dropdown open mb-3 dropdown-content-address" {{ stimulus_controller('selectAddress') }}>
+							<button class="btn btn-secondary dropdown-toggle" type="button" id="address-book" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Carnet d'adresses
+							</button>
+							<div class="dropdown-menu" aria-labelledby="address-book">
+								{% for address in app.user.addresses %}
+									<button class="dropdown-item" type="button" data-address="{{ address.address }}" data-zip-code="{{ address.zipCode }}" data-city="{{ address.city }}">{{ address }}</button>
+									{% if loop.index != loop.last %}
+										<div class="dropdown-divider"></div>
+									{% endif %}
+								{% endfor %}
+							</div>
+						</div>
+					{% endif %}
+					{{ form_widget(form) }}
+					<button type="submit" class="btn btn-primary">Valider</button>
+				</div>
+				{{ form_end(form) }}
+			</div>
+			<div class="col-md-5">
+				{% include 'Frontend/Cart/_cartTotals.html.twig' with { isInCart: 'none' } %}
+			</div>
+		</div>
+	</section>
+{% endblock %}

@@ -1,0 +1,11 @@
+<div class="card">
+	<h3 class="card-header bg-primary text-light">Informations sur le client</h3>
+	<div class="card-body">
+		<p class="card-text">Nom du client:
+			{{ order.user.fullName }}</p>
+		<p class="card-text">Email du client:
+			{{ order.user.email }}</p>
+		<p class="card-text">Adresse du client:
+			{{ order.user.addresses.last }}</p>
+	</div>
+</div>

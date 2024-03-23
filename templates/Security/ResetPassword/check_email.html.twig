@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Demande de réinitialisation du mot de passe envoyée
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center mb-3">Demande de réinitialisation du mot de passe envoyée</h1>
+		<div class="alert alert-info" role="alert">
+			<p>
+				Si un compte existe avec l'adresse email que vous avez fournie, alors un email vient d'être envoyé contenant un lien que vous pouvez utiliser pour réinitialiser votre mot de passe.
+				<br>
+				Ce lien expirera dans
+				{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+			</p>
+			<p>
+				Si vous ne recevez pas d'email, veuillez vérifier votre dossier de courrier indésirable ou
+				<a href="{{ path('app_forgot_password_request') }}" class="btn btn-primary">réessayer</a>
+			</p>
+		</div>
+	</section>
+{% endblock %}

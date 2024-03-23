@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	S'inscrire
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">S'inscrire</h1>
+		{{ form_start(form, {'attr': {'class': 'card p-3 w-75 mx-auto'}}) }}
+		<div class="row">
+			<div class="col-md-6">{{ form_row(form.firstName) }}</div>
+			<div class="col-md-6">{{ form_row(form.lastName) }}</div>
+		</div>
+		{{ form_rest(form) }}
+		<button type="submit" class="btn btn-primary">S'inscrire</button>
+		{{ form_end(form) }}
+	</section>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	détails de la commande
+	{{ order.number }}
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	{% import 'Backend/Common/_deleteForm.html.twig' as common %}
+
+	<section class="container mt-2 mb-4">
+		<h1 class="text-center">Détails de la commande
+			{{ order.number }}</h1>
+		<div class="d-flex justify-content-between">
+			<a href="{{ path('admin.orders.index') }}" class="btn btn-primary">Retour à la liste</a>
+			{{ common.deleteForm(path('admin.orders.cancel', {id: order.id}), order.id, 'Annuler') }}
+		</div>
+		<div class="row mt-4">
+			<div class="col-md-5">
+				{% include 'Backend/Orders/Show/_infoOrder.html.twig' %}
+				{% include 'Backend/Orders/Show/_infoPayments.html.twig' %}
+			</div>
+			<div class="col-md-7">
+				{% include 'Backend/Orders/Show/_infoClient.html.twig' %}
+			</div>
+		</div>
+		<div class="row mt-4">
+			<div class="col-md-7">
+				{% include 'Frontend/Cart/_listItems.html.twig' with {cart: order} %}
+			</div>
+			<div class="col-md-5">
+				{% include 'Frontend/Cart/_cartTotals.html.twig' with { isInCart: 'none', cart: order } %}
+			</div>
+		</div>
+	</section>
+{% endblock %}

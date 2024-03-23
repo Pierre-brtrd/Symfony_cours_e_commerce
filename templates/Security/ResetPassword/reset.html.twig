@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Reinitialiser votre mot de passe
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center mb-3">Reinitialiser votre mot de passe</h1>
+		{{ form_start(resetForm, {attr: {class: 'card p-3 w-75 mx-auto'}}) }}
+		{{ form_row(resetForm.plainPassword) }}
+		<div class="text-center">
+			<button class="btn btn-primary">Reinitialiser le mot de passe</button>
+		</div>
+		{{ form_end(resetForm) }}
+	</section>
+{% endblock %}

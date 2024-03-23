@@ -1,0 +1,10 @@
+{% extends 'Frontend/User/baseAccount.html.twig' %}
+
+{% block title %}
+	Mes commandes
+	{{ parent() }}
+{% endblock %}
+
+{% block content %}
+	{% include 'Frontend/User/_orders.html.twig' %}
+{% endblock %}

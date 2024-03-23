@@ -1,0 +1,8 @@
+{{ form_start(form, {'attr': {'class': 'card p-3 w-75 mx-auto'}}) }}
+<div class="row">
+	<div class="col-md-6">{{ form_row(form.firstName) }}</div>
+	<div class="col-md-6">{{ form_row(form.lastName) }}</div>
+</div>
+{{ form_rest(form) }}
+<button type="submit" class="btn btn-primary">Modifier</button>
+{{ form_end(form) }}

@@ -1,0 +1,16 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Nouvelle catégorie
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Création d'une nouvelle catégorie</h1>
+
+		{% include 'Backend/Categories/_form.html.twig' with {button_label: 'Créer'} %}
+
+		<a href="{{ path('admin.categories.index') }}" class="btn btn-primary mt-4">Retour à la liste</a>
+	</section>
+{% endblock %}

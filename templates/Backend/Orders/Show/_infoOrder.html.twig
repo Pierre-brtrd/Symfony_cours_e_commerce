@@ -1,0 +1,13 @@
+{% import 'Backend/Common/_deleteForm.html.twig' as common %}
+
+<div class="card">
+	<h3 class="card-header bg-primary text-light">Informations de la commande</h3>
+	<div class="card-body">
+		<p class="card-text">Commande passée le:
+			{{ order.updatedAt|format_datetime('short', 'short') }}</p>
+		<p class="card-text">
+			Status de la commande:
+			{{ common.status(order.status) }}
+		</p>
+	</div>
+</div>

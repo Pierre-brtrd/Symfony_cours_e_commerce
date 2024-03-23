@@ -1,0 +1,56 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Admin des catégories
+	{{ parent() }}
+{% endblock %}
+
+{% block meta %}
+	<meta name="turbo-visit-control" content="reload">
+{% endblock %}
+
+{% block body %}
+	{% import 'Backend/Common/_deleteForm.html.twig' as common %}
+	<section class="container mt-2">
+		<h1 class="text-center">Admin des catégories</h1>
+		<a href="{{ path('admin.categories.create') }}" class="btn btn-primary mt-2">Créer une catégorie</a>
+
+		<div class="table-responsive">
+			<table class="table table-bordered align-middle" data-toggle="table" data-sort-name="name" data-sort-order="asc" data-pagination="true" data-search="true" data-show-columns="true">
+				<thead>
+					<tr>
+						<th data-field="id" data-sortable="true">Id</th>
+						<th data-field="name" data-sortable="true">Nom</th>
+						<th data-field="createdAt" data-sortable="true">CreatedAt</th>
+						<th data-field="updatedAt" data-sortable="true">UpdatedAt</th>
+						<th data-field="enable" data-sortable="true">Active</th>
+						<th data-field="actions" data-sortable="false">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for categorie in categories %}
+						<tr>
+							<td>{{ categorie.id }}</td>
+							<td>{{ categorie.name }}</td>
+							<td>{{ categorie.createdAt ? categorie.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+							<td>{{ categorie.updatedAt ? categorie.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+							<td>
+								<span class="badge bg-{{ categorie.enable ? 'success' : 'danger' }}">{{ categorie.enable ? 'Active' : 'Non active' }}</span>
+							</td>
+							<td>
+								<div class="d-flex gap-2 align-items-center">
+									<a href="{{ path('admin.categories.edit', {'id': categorie.id}) }}" class="btn btn-warning">Edit</a>
+									{{ common.deleteForm(path('admin.categories.delete', {id: categorie.id}), categorie.id) }}
+								</div>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="6">no records found</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+{% endblock %}

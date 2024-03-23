@@ -1,0 +1,33 @@
+<header class="sidebar-wrapper">
+	<div class="toggle-sidebar">
+		<button class="btn-toggle-sidebar">
+			<i class="bi bi-list"></i>
+		</button>
+	</div>
+	<ul class="sidebar-nav">
+		<li class="sidebar-item sidebar-logo">
+			<a href="{{ path('app.home') }}" class="logo">E-commerce Symfo</a>
+		</li>
+		<li class="sidebar-item">
+			<a class="dropdown-item {{ app.request.get('_route') == 'admin.dashboard' ? 'active' }}" href="{{ path('admin.dashboard') }}">Dashboard</a>
+		</li>
+		<li class="sidebar-item">
+			<a class="dropdown-item {{ app.request.get('_route') == 'admin.orders.index' ? 'active' }}" href="{{ path('admin.orders.index') }}">Commandes</a>
+		</li>
+		<li class="sidebar-item">
+			<a class="dropdown-item {{ app.request.get('_route') == 'admin.products.index' ? 'active' }}" href="{{ path('admin.products.index') }}">Produits</a>
+		</li>
+		<li class="sidebar-item">
+			<a class="dropdown-item {{ app.request.get('_route') == 'admin.taxes.index' ? 'active' }}" href="{{ path('admin.taxes.index') }}">Taxes</a>
+		</li>
+		<li class="sidebar-item">
+			<a class="dropdown-item {{ app.request.get('_route') == 'admin.categories.index' ? 'active' }}" href="{{ path('admin.categories.index') }}">Catégories</a>
+		</li>
+		<li class="sidebar-item">
+			<a class="dropdown-item {{ app.request.get('_route') == 'admin.users.index' ? 'active' }}" href="{{ path('admin.users.index') }}">Users</a>
+		</li>
+		<li class="sidebar-item mt-5">
+			<a href="{{ path('app.home') }}">Voir le site</a>
+		</li>
+	</ul>
+</header>

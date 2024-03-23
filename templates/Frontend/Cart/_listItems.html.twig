@@ -1,0 +1,40 @@
+<div class="card">
+	<div class="card-header bg-dark d-flex align-items-center">
+		<h2 class="text-light">Produits</h2>
+		{% if form is defined %}
+			<div class="ms-auto d-flex gap-2 align-items-center">
+				{{ form_row(form.save) }}
+				{{ form_row(form.clear) }}
+			</div>
+		{% endif %}
+	</div>
+
+	<ul class="list-group list-group-flush">
+		{% for item in form is defined ? form.items : cart.items %}
+			{% set product = form is defined ? item.vars.data.product : item.product %}
+			<li class="list-group-item d-flex align-items-center">
+				<div class="flex-fill me-2">
+					<img src="{{ vich_uploader_asset(product) }}" width="100" loading="lazy" alt="{{ product.title }}">
+				</div>
+				<div class="flex-fill me-2">
+					<h2 class="my-0">{{ product.title }}</h2>
+					<small>{{ product.shortDescription|slice(0, 50) ~ '...' }}</small>
+					{% if form is defined %}
+						<div class="d-flex gap-3 align-items-end">
+							{{ form_row(item.quantity) }}
+							{{ form_row(item.remove) }}
+						</div>
+					{% else %}
+						<div class="d-flex gap-3 align-items-end">
+							<p>Quantité:
+								{{ item.quantity }}</p>
+						</div>
+					{% endif %}
+				</div>
+				<div class="flex-fill me-4">
+					<strong>{{ product.priceTTC|format_currency('EUR') }}</strong>
+				</div>
+			</li>
+		{% endfor %}
+	</ul>
+</div>

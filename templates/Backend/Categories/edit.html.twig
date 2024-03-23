@@ -1,0 +1,18 @@
+{% extends 'Backend/base.html.twig' %}
+
+{% block title %}
+	Modification de la catégorie
+	{{ categorie.name }}
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Modification de la catégorie
+			{{ categorie.name }}</h1>
+
+		{% include 'Backend/Categories/_form.html.twig' with {button_label: 'Modifier'} %}
+
+		<a href="{{ path('admin.categories.index') }}" class="btn btn-primary mt-4">Retour à la liste</a>
+	</section>
+{% endblock %}

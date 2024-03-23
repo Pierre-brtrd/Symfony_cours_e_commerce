@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Récapitulatif de votre commande
+	{{ parent() }}
+{% endblock %}
+
+{% block body %}
+	<section class="container mt-2">
+		<h1 class="text-center">Récapitulatif de votre commande</h1>
+		<a href="{{ path('app.cart') }}" class="btn btn-primary mt-2">Retour au panier</a>
+		<div class="row mt-4">
+			<div class="col-md-7">
+				{% include 'Frontend/Cart/_listItems.html.twig' %}
+			</div>
+			<div class="col-md-5">
+				{% include 'Frontend/Cart/_cartTotals.html.twig' with { isInCart: 'none' } %}
+			</div>
+		</div>
+		<div class="mt-4 text-center">
+			{{ form_start(formStripe, {attr: {'data-turbo': 'false'}}) }}
+			{{ form_widget(formStripe) }}
+			<button type="submit" class="btn btn-primary w-50">Payer la commande</a>
+			{{ form_end(formStripe) }}
+		</div>
+	</section>
+{% endblock %}
