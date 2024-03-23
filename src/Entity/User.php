@@ -68,6 +68,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Address $defaultAddress = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $googleId = null;
+
     public function __construct()
     {
         $this->enable = $this->enable ?? false;
@@ -288,6 +291,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDefaultAddress(?Address $defaultAddress): static
     {
         $this->defaultAddress = $defaultAddress;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): static
+    {
+        $this->googleId = $googleId;
 
         return $this;
     }

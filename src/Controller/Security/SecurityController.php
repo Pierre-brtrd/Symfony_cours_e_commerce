@@ -4,10 +4,12 @@ namespace App\Controller\Security;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,9 +30,15 @@ class SecurityController extends AbstractController
     public function register(
         Request $request,
         EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        RequestStack $requestStack,
+        UserRepository $userRepository
     ): Response|RedirectResponse {
-        $user = new User();
+        if ($requestStack->getSession()->has('user')) {
+            $user = $userRepository->find($requestStack->getSession()->get('user')->getId());
+        } else {
+            $user = new User();
+        }
 
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
@@ -42,6 +50,10 @@ class SecurityController extends AbstractController
                     $form->get('password')->getData()
                 )
             );
+
+            if ($requestStack->getSession()->has('user')) {
+                $requestStack->getSession()->remove('user');
+            }
 
             $em->persist($user);
             $em->flush();

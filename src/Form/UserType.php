@@ -77,9 +77,9 @@ class UserType extends AbstractType
                 ]
             ]);
 
-        if ($options['isEdit']) {
-            $builder->remove('password');
-        }
+        // if ($options['isEdit']) {
+        //     $builder->remove('password');
+        // }
 
         if ($options['isAdmin']) {
             $builder->remove('password')

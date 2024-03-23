@@ -13,7 +13,7 @@
 		<h1 class="text-center mb-3">Reinitialiser votre mot de passe</h1>
 
 		{{ form_start(requestForm, {attr: {class: 'card p-3 mx-auto w-50'}}) }}
-		{{ form_row(requestForm.email) }}
+		{{ form_row(requestForm.email, {value: app.request.get('email') ?: null }) }}
 		<div>
 			<small>
 				Entrez votre adresse email, et nous vous enverrons un lien pour réinitialiser votre mot de passe.

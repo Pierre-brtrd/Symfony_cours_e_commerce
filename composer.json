@@ -15,6 +15,8 @@
         "doctrine/orm": "^3.1",
         "knplabs/knp-gaufrette-bundle": "^0.9.0",
         "knplabs/knp-paginator-bundle": "^6.3",
+        "knpuniversity/oauth2-client-bundle": "^2.18",
+        "league/oauth2-google": "^4.0",
         "liip/imagine-bundle": "^2.12",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.26",
