@@ -24,8 +24,8 @@
 					<strong>Client depuis le:</strong>
 					{{ user.createdAt|format_datetime('full', 'none') }}</p>
 				<div class="d-flex flex-wrap gap-2">
-					<a href="#" class="btn btn-primary">Modifier</a>
-					<a href="#" class="btn btn-primary">Changer votre mot de passe</a>
+					<a href="{{ path('app.user.edit') }}" class="btn btn-primary">Modifier</a>
+					<a href="{{ path('app_forgot_password_request', {email: user.email}) }}" class="btn btn-primary">Changer votre mot de passe</a>
 				</div>
 			</div>
 		</div>

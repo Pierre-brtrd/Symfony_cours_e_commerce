@@ -23,6 +23,10 @@ security:
             logout:
                 path: app.logout
                 target: app.home
+            custom_authenticator:
+                - App\Security\GoogleAuthenticator
+                - App\Security\GithubAuthenticator
+
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
