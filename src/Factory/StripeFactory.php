@@ -68,11 +68,13 @@ class StripeFactory
             return new JsonResponse(['status' => 'error', 'message' => 'Body does not be empty'], 400);
         }
 
-        $event = new StripeEvent($this->getEvent($body, $signature));
+        $event = $this->getEvent($body, $signature);
 
         if ($event instanceof JsonResponse) {
             return $event;
         }
+
+        $event = new StripeEvent($event);
 
         $this->eventDispatcher->dispatch($event, $event->getName());
 
