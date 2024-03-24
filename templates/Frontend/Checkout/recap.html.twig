@@ -23,5 +23,13 @@
 			<button type="submit" class="btn btn-primary w-50">Payer la commande</a>
 			{{ form_end(formStripe) }}
 		</div>
+		<div class="alert alert-info mt-2">
+			<p>
+				Ceci est une application de test a but non lucratif et dans un but éducatif,
+				<strong>aucun prélèvement ne sera fait sur l'environnement de test</strong>, si vous voulez tester jusqu'à l'étape d'après paiement vous pouvez tester avec le code de carte
+				<strong>4242424242424242</strong>, pour la date d'expiration renseignez simplement une date postérieur à laa date actuelle et 3 chiffres aléatoire pour le CVC.
+			</p>
+			<p>Aucune de vos données ne sera utilisée ou revendu à des partenaires tiers.</p>
+		</div>
 	</section>
 {% endblock %}

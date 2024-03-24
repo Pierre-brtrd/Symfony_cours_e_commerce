@@ -23,6 +23,7 @@
         "phpstan/phpdoc-parser": "^1.26",
         "stof/doctrine-extensions-bundle": "^1.10",
         "stripe/stripe-php": "^13.13",
+        "symfony/apache-pack": "^1.0",
         "symfony/asset": "7.0.*",
         "symfony/asset-mapper": "7.0.*",
         "symfony/console": "7.0.*",
