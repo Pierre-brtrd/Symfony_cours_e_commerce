@@ -65,7 +65,10 @@ class StripeFactory
     public function handle(string $signature, mixed $body): JsonResponse
     {
         if (!$body) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Body does not be empty'], 400);
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Body does not be empty'
+            ], 400);
         }
 
         $event = $this->getEvent($body, $signature);
@@ -78,7 +81,10 @@ class StripeFactory
 
         $this->eventDispatcher->dispatch($event, $event->getName());
 
-        return new JsonResponse(['status' => 'success', 'event' => $event], 200);
+        return new JsonResponse([
+            'status' => 'success',
+            'event' => $event->getResource()
+        ], 200);
     }
 
     public function getEvent(mixed $body, string $signature): Event|JsonResponse
@@ -86,9 +92,13 @@ class StripeFactory
         try {
             $event = Webhook::constructEvent($body, $signature, $this->webhook);
         } catch (\UnexpectedValueException $e) {
-            return new JsonResponse(['Error parsing payload: ' => $e->getMessage()], 400);
+            return new JsonResponse([
+                'Error parsing payload: ' => $e->getMessage()
+            ], 400);
         } catch (\Stripe\Exception\SignatureVerificationException $e) {
-            return new JsonResponse(['Error verifying webhook signature: ' => $e->getMessage()], 400);
+            return new JsonResponse([
+                'Error verifying webhook signature: ' => $e->getMessage()
+            ], 400);
         }
 
         return $event;
