@@ -11,6 +11,8 @@ use Stripe\Stripe;
 use Stripe\Webhook;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 use Webmozart\Assert\Assert;
 
 class StripeFactory
@@ -19,6 +21,8 @@ class StripeFactory
         private readonly string $stripeSecretKey,
         private readonly string $webhook,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly UploaderHelper $uploaderHelper,
+        private readonly RequestStack $requestStack,
     ) {
         Stripe::setApiKey($this->stripeSecretKey);
         Stripe::setApiVersion('2020-08-27');
@@ -42,7 +46,9 @@ class StripeFactory
                         'name' => $order->getQuantity() . ' x - ' . $order->getProduct()->getTitle(),
                         'description' => $order->getProduct()->getshortDescription(),
                         'images' => [
-                            'https://picsum.photos/300/200'
+                            $this->requestStack->getCurrentRequest()->getScheme() . '://' .
+                                $this->requestStack->getCurrentRequest()->getHttpHost() .
+                                $this->uploaderHelper->asset($order->getProduct(), 'image') ?: '',
                         ],
                     ],
                     'unit_amount' => bcmul($order->getProduct()->getPriceTTC(), 100),
