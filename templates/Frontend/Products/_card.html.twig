@@ -1,4 +1,4 @@
-<div class="col-md-4">
+<div class="col-md-4" id="product-{{ product.id }}">
 	<div class="card">
 		<img src="{{ vich_uploader_asset(product)|imagine_filter('product_thumb_list_small') }}" {{ stimulus_controller('symfony/ux-lazy-image/lazy-image', { src: vich_uploader_asset(product)|imagine_filter('product_thumb_list_large') } ) }} class="card-img-top" alt="{{ product.title }}">
 		<div class="card-body">

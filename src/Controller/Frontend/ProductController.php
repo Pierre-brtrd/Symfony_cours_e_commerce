@@ -10,6 +10,7 @@ use App\Form\ProductFilterType;
 use App\Manager\CartManager;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,11 +43,30 @@ class ProductController extends AbstractController
 
         $products = $this->productRepo->createFilterListShop($filter, 6);
 
+        if ($request->get('ajax')) {
+            return new JsonResponse([
+                'content' => $this->renderView('Frontend/Products/_list.html.twig', [
+                    'products' => $products['data'],
+                ]),
+                'sorting' => $this->renderView('Frontend/Products/_sorting.html.twig', [
+                    'products' => $products['data'],
+                ]),
+                'pagination' => $this->renderView('Frontend/Products/_pagination.html.twig', [
+                    'products' => $products['data'],
+                ]),
+                'count' => $this->renderView('Frontend/Products/_count.html.twig', [
+                    'products' => $products['data'],
+                ]),
+                'pages' => ceil($products['data']->getTotalItemCount() / $products['data']->getItemNumberPerPage()),
+            ]);
+        }
+
         return $this->render('Frontend/Products/index.html.twig', [
             'form' => $form,
             'products' => $products['data'],
             'min' => $products['min'],
             'max' => $products['max'],
+            'totalPage' => ceil($products['data']->getTotalItemCount() / $products['data']->getItemNumberPerPage()),
         ]);
     }
 

@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-	<section class="container mt-2 mb-4 product">
+	<section class="container mt-2 mb-4 product" {{ stimulus_controller('filter')}}>
 		<h1 class="text-center">Découvrez nos produits</h1>
 		<div class="row gy-3 mt-3">
 			<div class="col-md-3 mt-md-0">
@@ -19,10 +19,10 @@
 						{% include "Frontend/Products/_sorting.html.twig" %}
 					</div>
 				</div>
-				<div class="row gy-3 js-filter-content">
+				<div class="row gy-3 js-filter-content" data-total-page="{{ totalPage }}" data-js-locale="{{ app.request.locale }}">
 					{% include 'Frontend/Products/_list.html.twig' %}
 				</div>
-				<div class="js-content-pagination">
+				<div class="js-filter-pagination">
 					{% include 'Frontend/Products/_pagination.html.twig' %}
 				</div>
 			</div>
