@@ -1,0 +1,4 @@
+{% from 'Frontend/Common/sorting.html.twig' import sorting_btn %}
+
+{{ sorting_btn('Nom', 'p.title', app.request.get('direction') == 'ASC' ? 'DESC' : 'ASC') }}
+{{ sorting_btn('Prix', 'p.priceHT', app.request.get('direction') == 'DESC' ? 'ASC' : 'DESC') }}

@@ -1,0 +1,18 @@
+{{ form_start(form, {attr: {class: 'card p-3 js-filter-search'}}) }}
+{{ form_row(form.query) }}
+<h3 class="mb-2">Prix</h3>
+<div class="container" {{ stimulus_controller('noUiSlider')}}>
+	<div class="row">
+		<div class="col-md-6">
+			{{ form_row(form.min, {value: min}) }}
+		</div>
+		<div class="col-md-6">
+			{{ form_row(form.max, {value: max}) }}
+		</div>
+	</div>
+	<div id="price-slider" data-min="{{ min }}" data-max="{{ max }}"></div>
+</div>
+<h3 class="mb-2 mt-3">Catégories</h3>
+{{ form_row(form.tags, {'attr': {'class': 'd-flex flex-wrap gap-2 align-items-center'}}) }}
+<button class="btn btn-primary">Filtrer</button>
+{{ form_end(form) }}
