@@ -1,0 +1,14 @@
+{% macro sorting_btn(label, sort, direction) %}
+
+	{% if sort == app.request.get('sort') and direction == 'ASC' %}
+		{% set icon = '<i class="bi bi-sort-down"></i>' %}
+	{% elseif sort == app.request.get('sort') and direction == 'DESC' %}
+		{% set icon = '<i class="bi bi-sort-up"></i>' %}
+	{% else %}
+		{% set icon = '<i class="bi bi-filter-left"></i>' %}
+	{% endif %}
+
+	<a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge( app.request.query.all())|merge({sort: sort, direction: direction}) ) }}" class="btn btn-primary">
+		{{ icon|raw }}
+		{{ label }}</a>
+{% endmacro %}

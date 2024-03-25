@@ -32,6 +32,9 @@
         "bootstrap-icons": "^1.11.3",
         "bootstrap-table": "^1.22.3",
         "chartjs-plugin-zoom": "^2.0.1",
-        "jquery": "^3.7.1"
+        "flip-toolkit": "^7.1.0",
+        "jquery": "^3.7.1",
+        "lodash": "^4.17.21",
+        "nouislider": "^15.7.1"
     }
 }

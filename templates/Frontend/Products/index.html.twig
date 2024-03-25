@@ -6,15 +6,26 @@
 {% endblock %}
 
 {% block body %}
-	<section class="container mt-2 mb-4 product">
+	<section class="container mt-2 mb-4 product" {{ stimulus_controller('filter')}}>
 		<h1 class="text-center">Découvrez nos produits</h1>
 		<div class="row gy-3 mt-3">
-			{% for product in products %}
-				{% include 'Frontend/Products/_card.html.twig' %}
-			{% endfor %}
-		</div>
-		<div class="mt-4">
-			{{ knp_pagination_render(products) }}
+			<div class="col-md-3 mt-md-0">
+				{% include 'Frontend/Products/_search.html.twig' %}
+			</div>
+			<div class="col-md-9 mt-4 mt-md-0">
+				<div class="d-flex justify-content-between mb-2 navigation-blog-list">
+					{% include "Frontend/Products/_count.html.twig" %}
+					<div class="d-flex justify-content-end gap-2 js-filter-sorting">
+						{% include "Frontend/Products/_sorting.html.twig" %}
+					</div>
+				</div>
+				<div class="row gy-3 js-filter-content" data-total-page="{{ totalPage }}" data-js-locale="{{ app.request.locale }}">
+					{% include 'Frontend/Products/_list.html.twig' %}
+				</div>
+				<div class="js-filter-pagination">
+					{% include 'Frontend/Products/_pagination.html.twig' %}
+				</div>
+			</div>
 		</div>
 	</section>
 {% endblock %}

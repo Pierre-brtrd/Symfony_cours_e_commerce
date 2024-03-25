@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Filter\ProductFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -45,6 +47,59 @@ class ProductRepository extends ServiceEntityRepository
             $page,
             $maxPerPage
         );
+    }
+
+    public function createFilterListShop(ProductFilter $filter, int $maxPerPage = 6): array
+    {
+        $query = $this->createQueryBuilder('p')
+            ->select('p', 'c', 't')
+            ->leftJoin('p.categories', 'c')
+            ->join('p.taxe', 't');
+
+        if ($filter->getQuery()) {
+            $query
+                ->andWhere('p.title LIKE :query')
+                ->setParameter('query', '%' . $filter->getQuery() . '%');
+        }
+
+        if ($filter->getMin()) {
+            $query
+                ->andWhere('p.priceHT * (1 + t.rate) >= :min')
+                ->setParameter('min', $filter->getMin());
+        }
+
+        if ($filter->getMax()) {
+            $query
+                ->andWhere('p.priceHT * (1 + t.rate) <= :max')
+                ->setParameter('max', $filter->getMax());
+        }
+
+        if ($filter->getTags()) {
+            $query
+                ->andWhere('c.id IN (:tags)')
+                ->setParameter('tags', $filter->getTags());
+        }
+
+
+        $query
+            ->orderBy($filter->getSort(), $filter->getDirection())
+            ->getQuery();
+
+        $paginate = $this->paginator->paginate(
+            $query,
+            $filter->getPage(),
+            $maxPerPage
+        );
+
+        $subQuery = $query->select('MIN(p.priceHT * (1 + t.rate)) as min', 'MAX(p.priceHT * (1 + t.rate)) as max')
+            ->getQuery()
+            ->getScalarResult();
+
+        return [
+            'data' => $paginate,
+            'min' => (int)$subQuery[0]['min'],
+            'max' => (int)$subQuery[0]['max'],
+        ];
     }
 
     public function findLatest(int $limit, bool $includeDisable = false): array

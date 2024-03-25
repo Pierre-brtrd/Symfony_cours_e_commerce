@@ -3706,6 +3706,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"flip-toolkit@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "flip-toolkit@npm:7.1.0"
+  dependencies:
+    rematrix: "npm:0.2.2"
+  checksum: 5cf4312361cc164b17e5adbcd3030dc7a6840a4011b00603d8aec824074857bdba0bca0d7f94f485dc59c97d66eb4572d8250e01c5d04f6afa178ef2e144e773
+  languageName: node
+  linkType: hard
+
 "follow-redirects@npm:^1.0.0":
   version: 1.15.6
   resolution: "follow-redirects@npm:1.15.6"
@@ -4983,6 +4992,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nouislider@npm:^15.7.1":
+  version: 15.7.1
+  resolution: "nouislider@npm:15.7.1"
+  checksum: 7faac38b505219e656ba0a10be35190b82794e375d85a7ac93b0daadb3a0bd59630236d562cfa1994363b753623e902e39142fb0cdaca00e75fe7e6d86c09b4a
+  languageName: node
+  linkType: hard
+
 "npm-run-path@npm:^4.0.1":
   version: 4.0.1
   resolution: "npm-run-path@npm:4.0.1"
@@ -5868,6 +5884,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rematrix@npm:0.2.2":
+  version: 0.2.2
+  resolution: "rematrix@npm:0.2.2"
+  checksum: f1706abfe16e48b7e5ff74a33f624f1f39504fcecfa59cb93083d2bbba9392a5350b1b1a64b0c83abbeb202238390eaa7427702c8229e743a97eb2ce847a02c0
+  languageName: node
+  linkType: hard
+
 "renderkid@npm:^3.0.0":
   version: 3.0.0
   resolution: "renderkid@npm:3.0.0"
@@ -6006,7 +6029,10 @@ __metadata:
     bootstrap-table: "npm:^1.22.3"
     chartjs-plugin-zoom: "npm:^2.0.1"
     core-js: "npm:^3.23.0"
+    flip-toolkit: "npm:^7.1.0"
     jquery: "npm:^3.7.1"
+    lodash: "npm:^4.17.21"
+    nouislider: "npm:^15.7.1"
     regenerator-runtime: "npm:^0.13.9"
     sass: "npm:^1.71.1"
     sass-loader: "npm:^14.0.0"

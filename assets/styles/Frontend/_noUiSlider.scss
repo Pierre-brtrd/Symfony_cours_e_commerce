@@ -1,0 +1,23 @@
+@import "../variables";
+
+.noUi-base {
+    .noUi-connect {
+        background: $secondary;
+    }
+
+    .noUi-handle {
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        top: -9px;
+
+        &::after,
+        &::before {
+            display: none;
+        }
+    }
+}
+
+.noUi-horizontal {
+    height: 10px;
+}
