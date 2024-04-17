@@ -1,5 +1,4 @@
 {% macro sorting_btn(label, sort, direction) %}
-
 	{% if sort == app.request.get('sort') and direction == 'ASC' %}
 		{% set icon = '<i class="bi bi-sort-down"></i>' %}
 	{% elseif sort == app.request.get('sort') and direction == 'DESC' %}
